@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Evian Bridge</title>
+    <link rel="stylesheet" href="../styles/styles.css" />
+</head>
+<body>
+    <header>
+    <h1>The Evian Bridge</h1>
+    </header>
+
+    <main>
+    <section class="upload-section">
+        <input type="file" id="csvFileInput" accept=".csv" />
+    </section>
+
+    <section class="table-section">
+        <div id="filtersContainer" class="filters-wrapper"></div>
+        <div id="tableContainer"></div>
+        <div id="pagination" class="pagination"></div>
+    </section>
+    </main>
+
+    <!-- PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Your custom script -->
+    <script src="../scripts/main.js"></script>
+</body>
+</html>
