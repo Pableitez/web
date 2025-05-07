@@ -1,31 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Evian Bridge</title>
-    <link rel="stylesheet" href="../styles/styles.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Evian Bridge</title>
+  <link rel="stylesheet" href="../styles/styles.css" />
 </head>
 <body>
-    <header>
-    <h1>The Evian Bridge</h1>
-    </header>
 
-    <main>
-    <section class="upload-section">
-        <input type="file" id="csvFileInput" accept=".csv" />
+  <!-- Toolbar superior con título incluido -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+      <input type="file" id="csvFileInput" accept=".csv" hidden />
+    </div>
+
+    <div class="toolbar-title">
+      <h1>The Evian Bridge</h1>
+    </div>
+
+    <div class="toolbar-right">
+      <button id="toggleFiltersBtn" class="toolbar-button">Show Filters</button>
+      <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
+      <select id="viewSelect" class="toolbar-button">
+        <option value="">Select view</option>
+      </select>
+    </div>
+  </div>
+
+
+    <section class="table-controls">
+      <label for="rowsPerPageSelect">Rows per page:
+        <select id="rowsPerPageSelect">
+          <option value="20">20</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="-1">All</option>
+        </select>
+      </label>
+      <div id="pagination" class="pagination"></div>
     </section>
 
-    <section class="table-section">
-        <div id="filtersContainer" class="filters-wrapper"></div>
-        <div id="tableContainer"></div>
-        <div id="pagination" class="pagination"></div>
-    </section>
-    </main>
+    <div class="table-container" id="tableContainer"></div>
+  </main>
 
-    <!-- PapaParse for CSV parsing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- Your custom script -->
-    <script src="../scripts/main.js"></script>
+  <!-- Off-canvas panel para columnas -->
+   <div id="overlay" class="overlay hidden"></div>
+  <div id="columnsPanel" class="offcanvas-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Select columns</h3>
+      <button id="closeColumnsPanel">✖</button>
+    </div>
+    <div id="columnVisibility" class="offcanvas-body"></div>
+
+    <div class="views-controls">
+      <button id="saveViewBtn">Save View</button>
+      <button id="manageViewsBtn">Manage Views</button>
+    </div>
+  </div>
+
+  <!-- Modal para gestionar vistas -->
+  <div id="manageViewsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Manage Saved Views</h2>
+      <ul id="savedViewsList"></ul>
+      <button id="closeManageViews">Close</button>
+    </div>
+  </div>
+
+  <!-- CSV parser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="../scripts/main.js"></script>
+
+
+
 </body>
 </html>
