@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData = [...originalData];
         currentHeaders = Object.keys(originalData[0]);
         generateFilterSidebar(currentHeaders); 
-        document.getElementById("leftFilterPanel").classList.remove("hidden");
+
         
         generateColumnVisibilityControls(currentHeaders);
         applyFilters();
