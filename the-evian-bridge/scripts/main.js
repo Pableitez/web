@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
         originalData = results.data;
         filteredData = [...originalData];
         currentHeaders = Object.keys(originalData[0]);
+        generateFilterSidebar(currentHeaders); 
+        document.getElementById("leftFilterPanel").classList.remove("hidden");
+        
         generateColumnVisibilityControls(currentHeaders);
         applyFilters();
         populateSavedViews();
@@ -23,6 +26,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+// ------------ Panel dinamico de filtros -------------- //
+
+function generateFilterSidebar(headers) {
+  const container = document.getElementById("filterInputsContainer");
+  container.innerHTML = "";
+  headers.forEach((col) => {
+    const div = document.createElement("div");
+    div.className = "filter-block";
+
+    const label = document.createElement("label");
+    label.textContent = col;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = `Search ${col}`;
+    input.dataset.key = col;
+    input.addEventListener("input", () => {
+      filterValues[col] = input.value.trim().toLowerCase();
+      applyFilters();
+    });
+
+    div.appendChild(label);
+    div.appendChild(input);
+    container.appendChild(div);
+  });
+}
 
 
   function applyFilters() {
@@ -173,6 +202,10 @@ document.addEventListener("DOMContentLoaded", function () {
     overlay.classList.toggle("hidden");
   });
   
+  document.getElementById("toggleFiltersBtn").addEventListener("click", () => {
+    const panel = document.getElementById("leftFilterPanel");
+    panel.classList.toggle("hidden");
+  });
 
   document.getElementById("closeColumnsPanel").addEventListener("click", () => {
     document.getElementById("columnsPanel").classList.add("hidden");

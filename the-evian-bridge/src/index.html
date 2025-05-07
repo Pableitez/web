@@ -20,7 +20,7 @@
     </div>
 
     <div class="toolbar-right">
-      <button id="toggleFiltersBtn" class="toolbar-button">Show Filters</button>
+      <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
       <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
       <select id="viewSelect" class="toolbar-button">
         <option value="">Select view</option>
@@ -28,6 +28,14 @@
     </div>
   </div>
 
+  <!-- 🧭 Panel lateral izquierdo para filtros -->
+  <div id="leftFilterPanel" class="left-panel hidden">
+    <h3>Filters</h3>
+    <div id="filterInputsContainer" class="filter-inputs"></div>
+  </div>
+
+  <!-- 🧱 Contenido principal -->
+  <main class="main-content">
 
     <section class="table-controls">
       <label for="rowsPerPageSelect">Rows per page:
@@ -45,8 +53,8 @@
     <div class="table-container" id="tableContainer"></div>
   </main>
 
-  <!-- Off-canvas panel para columnas -->
-   <div id="overlay" class="overlay hidden"></div>
+  <!-- 🧾 Off-canvas panel para columnas -->
+  <div id="overlay" class="overlay hidden"></div>
   <div id="columnsPanel" class="offcanvas-panel hidden">
     <div class="offcanvas-header">
       <h3>Select columns</h3>
@@ -60,7 +68,7 @@
     </div>
   </div>
 
-  <!-- Modal para gestionar vistas -->
+  <!-- 🗂 Modal para gestionar vistas -->
   <div id="manageViewsModal" class="modal hidden">
     <div class="modal-content">
       <h2>Manage Saved Views</h2>
@@ -69,11 +77,9 @@
     </div>
   </div>
 
-  <!-- CSV parser -->
+  <!-- 📦 CSV parser -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script src="../scripts/main.js"></script>
-
-
 
 </body>
 </html>
