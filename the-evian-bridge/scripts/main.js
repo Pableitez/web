@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
   let originalData = [];
   let filteredData = [];
   let currentPage = 1;
@@ -20,6 +21,13 @@ document.addEventListener("DOMContentLoaded", function () {
         generateColumnVisibilityControls(currentHeaders);
         applyFilters();
         populateSavedViews();
+        const globalInput = document.getElementById("globalSearchInput");
+        if (globalInput) {
+          globalInput.addEventListener("input", () => {
+            applyFilters();
+          });
+        }
+
         document.addEventListener("input", (e) => {
           const input = e.target;
           if (!input.closest(".filter-block")) return;
@@ -283,6 +291,13 @@ function applyFilters() {
   }
   
   filteredData = originalData.filter((row) => {
+    const globalSearchTerm = document.getElementById("globalSearchInput")?.value.trim().toLowerCase() || "";
+
+    const matchesGlobalSearch = globalSearchTerm === "" || Object.values(row).some(val =>
+      val && val.toString().toLowerCase().includes(globalSearchTerm)
+    );
+    if (!matchesGlobalSearch) return false;
+
     return Object.keys(filterValues).every((key) => {
       if (key.endsWith("_start") || key.endsWith("_end") || key.endsWith("_empty")) {
         const baseKey = key.replace(/_(start|end|empty)$/, "");
@@ -427,6 +442,11 @@ function parseFlexibleDate(value) {
     table.appendChild(tbody);
     container.appendChild(table);
     createPaginationControls(data.length, pageSize);
+    // 🧮 Añadir contador de registros
+const recordCountEl = document.getElementById("recordCount");
+if (recordCountEl) {
+  recordCountEl.textContent = `Total: ${data.length} records`;
+}
   }
 
   function createPaginationControls(totalRows, pageSize) {
