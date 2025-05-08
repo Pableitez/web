@@ -62,7 +62,6 @@ function generateFilterSidebar(headers) {
       emptyInput.className = "filter-empty-checkbox";
     
       emptyLabel.appendChild(emptyInput);
-      emptyLabel.append(" Empty only");
     
       // Event listeners
       startInput.addEventListener("input", () => {
