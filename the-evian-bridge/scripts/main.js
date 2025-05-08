@@ -34,11 +34,39 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-
 // ------------ Panel dinamico de filtros -------------- //
 function generateFilterSidebar(headers) {
   const container = document.getElementById("filterInputsContainer");
   container.innerHTML = "";
+
+  // Agrupadores
+  const dateToggle = document.createElement("button");
+  dateToggle.className = "filter-toggle";
+  dateToggle.textContent = "Filters by Date";
+
+  const dateGroup = document.createElement("div");
+  dateGroup.className = "filter-group";
+
+  const refToggle = document.createElement("button");
+  refToggle.className = "filter-toggle";
+  refToggle.textContent = "Filters by Reference";
+
+  const refGroup = document.createElement("div");
+  refGroup.className = "filter-group";
+
+  // Desplegables
+  dateToggle.addEventListener("click", () => {
+    dateGroup.classList.toggle("collapsed");
+  });
+
+  refToggle.addEventListener("click", () => {
+    refGroup.classList.toggle("collapsed");
+  });
+
+  container.appendChild(dateToggle);
+  container.appendChild(dateGroup);
+  container.appendChild(refToggle);
+  container.appendChild(refGroup);
 
   headers.forEach((col) => {
     const div = document.createElement("div");
@@ -52,65 +80,57 @@ function generateFilterSidebar(headers) {
     if (isDateField(col)) {
       const startInput = document.createElement("input");
       startInput.type = "date";
-      startInput.className = "filter-date"; 
-      startInput.placeholder = "From";
+      startInput.className = "filter-date";
       startInput.dataset.key = col + "_start";
-    
+
       const endInput = document.createElement("input");
       endInput.type = "date";
-      endInput.className = "filter-date"; 
-      endInput.placeholder = "To";
+      endInput.className = "filter-date";
       endInput.dataset.key = col + "_end";
-    
-      const emptyLabel = document.createElement("label");
-      emptyLabel.className = "filter-empty-label";
-      
+
       const emptyInput = document.createElement("input");
       emptyInput.type = "checkbox";
       emptyInput.dataset.key = col + "_empty";
       emptyInput.className = "filter-empty-checkbox";
-    
-      emptyLabel.appendChild(emptyInput);
 
-    
-      // Event listeners
+      label.appendChild(emptyInput);
+
+      // Eventos
       startInput.addEventListener("input", () => {
         filterValues[col + "_start"] = startInput.value;
         applyFilters();
       });
-    
+
       endInput.addEventListener("input", () => {
         filterValues[col + "_end"] = endInput.value;
         applyFilters();
       });
-    
+
       emptyInput.addEventListener("change", () => {
         filterValues[col + "_empty"] = emptyInput.checked;
         applyFilters();
       });
-    
-      // Append inputs to the filter div
+
       div.appendChild(startInput);
       div.appendChild(endInput);
-      div.appendChild(emptyLabel);
-    }
-    
-
- else {
+      dateGroup.appendChild(div);
+    } else {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = `Search ${col}`;
       input.dataset.key = col;
+
       input.addEventListener("input", () => {
         filterValues[col] = input.value.trim().toLowerCase();
         applyFilters();
       });
-      div.appendChild(input);
-    }
 
-    container.appendChild(div);
+      div.appendChild(input);
+      refGroup.appendChild(div);
+    }
   });
 }
+
 
 function applyFilters() {
   function parseDateStrict(value) {

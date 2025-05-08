@@ -171,6 +171,7 @@
   .filter-block {
     display: flex;
     flex-direction: column;
+    margin-bottom: 1.2rem; /* o más si lo prefieres */
   }
   
   .filter-block input {
@@ -681,4 +682,45 @@
     border-radius: 6px;
     padding: 0.5rem;
   }
+  .filter-toggle {
+    background-color: #0a2337;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: left;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+  }
   
+  .filter-group.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .filter-block > label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap; /* Evita salto de línea del texto */
+  }
+  
+  .filter-empty-checkbox {
+    transform: scale(0.9);
+    accent-color: #0a2337;
+    margin-left: 0; /* Quita margen */
+  }
+/* Solo aplica sombreado cuando el checkbox de empty está marcado */
+.filter-block:has(input.filter-empty-checkbox:checked) {
+  background-color: #eef4fb;
+  border: 1px solid #0a2337;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
