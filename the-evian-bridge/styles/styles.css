@@ -674,3 +674,11 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
   }
   
+  .filter-block.active {
+    background-color: #e8f1ff;
+    border: 1px solid #0a2337;
+    box-shadow: 0 0 5px rgba(10, 35, 55, 0.6);
+    border-radius: 6px;
+    padding: 0.5rem;
+  }
+  

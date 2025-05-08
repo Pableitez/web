@@ -17,14 +17,23 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData = [...originalData];
         currentHeaders = Object.keys(originalData[0]);
         generateFilterSidebar(currentHeaders); 
-
-        
         generateColumnVisibilityControls(currentHeaders);
         applyFilters();
         populateSavedViews();
+        document.addEventListener("input", (e) => {
+          const input = e.target;
+          if (!input.closest(".filter-block")) return;
+        
+          const block = input.closest(".filter-block");
+          const inputs = block.querySelectorAll("input[type='text'], input[type='date']");
+          const hasValue = Array.from(inputs).some(i => i.value.trim() !== "");
+        
+          block.classList.toggle("active", hasValue);
+        });
       },
     });
   });
+
 
 // ------------ Panel dinamico de filtros -------------- //
 function generateFilterSidebar(headers) {
@@ -62,6 +71,7 @@ function generateFilterSidebar(headers) {
       emptyInput.className = "filter-empty-checkbox";
     
       emptyLabel.appendChild(emptyInput);
+
     
       // Event listeners
       startInput.addEventListener("input", () => {
