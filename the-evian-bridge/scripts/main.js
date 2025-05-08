@@ -34,27 +34,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-// ------------ Panel dinamico de filtros -------------- //
+// ------------ Panel dinámico de filtros -------------- //
 function generateFilterSidebar(headers) {
   const container = document.getElementById("filterInputsContainer");
   container.innerHTML = "";
 
-  // Agrupadores
+  // Botones de sección
   const dateToggle = document.createElement("button");
   dateToggle.className = "filter-toggle";
   dateToggle.textContent = "Filters by Date";
-
-  const dateGroup = document.createElement("div");
-  dateGroup.className = "filter-group";
 
   const refToggle = document.createElement("button");
   refToggle.className = "filter-toggle";
   refToggle.textContent = "Filters by Reference";
 
+  // Contenedores de grupos
+  const dateGroup = document.createElement("div");
+  dateGroup.className = "filter-group";
+
   const refGroup = document.createElement("div");
   refGroup.className = "filter-group";
 
-  // Desplegables
+  // Eventos de toggle
   dateToggle.addEventListener("click", () => {
     dateGroup.classList.toggle("collapsed");
   });
@@ -63,6 +64,7 @@ function generateFilterSidebar(headers) {
     refGroup.classList.toggle("collapsed");
   });
 
+  // Añadir al DOM
   container.appendChild(dateToggle);
   container.appendChild(dateGroup);
   container.appendChild(refToggle);
@@ -74,8 +76,6 @@ function generateFilterSidebar(headers) {
 
     const label = document.createElement("label");
     label.textContent = col;
-
-    div.appendChild(label);
 
     if (isDateField(col)) {
       const startInput = document.createElement("input");
@@ -93,7 +93,11 @@ function generateFilterSidebar(headers) {
       emptyInput.dataset.key = col + "_empty";
       emptyInput.className = "filter-empty-checkbox";
 
+      // Adjuntar checkbox al label
       label.appendChild(emptyInput);
+      div.appendChild(label);
+      div.appendChild(startInput);
+      div.appendChild(endInput);
 
       // Eventos
       startInput.addEventListener("input", () => {
@@ -111,25 +115,57 @@ function generateFilterSidebar(headers) {
         applyFilters();
       });
 
-      div.appendChild(startInput);
-      div.appendChild(endInput);
       dateGroup.appendChild(div);
-    } else {
+
+    } 
+    
+    else {
       const input = document.createElement("input");
       input.type = "text";
       input.placeholder = `Search ${col}`;
       input.dataset.key = col;
-
+    
+      const listId = `list-${col.replace(/\s+/g, '-').toLowerCase()}`;
+      input.setAttribute("list", listId);
+    
+      const datalist = document.createElement("datalist");
+      datalist.id = listId;
+    
+      try {
+        const uniqueValues = [
+          ...new Set(
+            originalData.map(row => row[col])
+            .filter(val => val && typeof val === "string" && val.trim() !== "")
+          )
+        ].slice(0, 100); // limita las opciones sugeridas
+    
+        uniqueValues.forEach(val => {
+          const option = document.createElement("option");
+          option.value = val;
+          datalist.appendChild(option);
+        });
+      } catch (err) {
+        console.warn(`Error al generar opciones para ${col}:`, err);
+      }
+    
       input.addEventListener("input", () => {
-        filterValues[col] = input.value.trim().toLowerCase();
+        const values = input.value
+          .split(",")
+          .map(v => v.trim().toLowerCase())
+          .filter(Boolean);
+        filterValues[col] = values;
         applyFilters();
       });
-
+    
+      div.appendChild(label);
       div.appendChild(input);
+      div.appendChild(datalist);
       refGroup.appendChild(div);
     }
+    
   });
 }
+
 
 
 function applyFilters() {
@@ -199,39 +235,44 @@ function isDateField(key) {
 
   for (const row of originalData) {
     const val = row[key];
-    if (!val || typeof val !== "string") continue;
+    if (!val) continue;
 
-    const trimmed = val.trim();
+    const str = typeof val === "string" ? val.trim() : String(val);
 
-    // Requiere números y separadores comunes
-    const likelyDate = /[\/\-]/.test(trimmed) && /\d{2}/.test(trimmed);
+    // Requiere números y separadores típicos
+    const likelyDate = /[\/\-]/.test(str) && /\d{2}/.test(str);
     if (!likelyDate) continue;
 
     totalChecked++;
 
-    const parsed = parseFlexibleDate(trimmed);
+    const parsed = parseFlexibleDate(str);
     if (parsed instanceof Date && !isNaN(parsed)) validCount++;
 
-    if (totalChecked >= 10) break; // Suficientes muestras
+    if (totalChecked >= 10) break; // suficiente muestra
   }
 
   return totalChecked > 0 && (validCount / totalChecked) >= 0.6;
 }
 
-function parseFlexibleDate(value) {
-  if (!value) return null;
 
-  // Formato dd/mm/yyyy hh:mm o dd-mm-yyyy hh:mm
-  const match = value.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+function parseFlexibleDate(value) {
+  if (!value || typeof value !== "string") return null;
+
+  // dd/mm/yyyy hh:mm:ss o dd-mm-yyyy hh:mm:ss (hora opcional)
+  const match = value.match(
+    /^(\d{2})[\/\-](\d{2})[\/\-](\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+
   if (match) {
-    const [, day, month, year, hours = "00", minutes = "00"] = match;
-    return new Date(`${year}-${month}-${day}T${hours}:${minutes}`);
+    const [, day, month, year, hours = "00", minutes = "00", seconds = "00"] = match;
+    return new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}`);
   }
 
-  // Intento final con Date.parse
+  // ISO 8601 fallback
   const parsed = Date.parse(value);
   return isNaN(parsed) ? null : new Date(parsed);
 }
+
 
   function getRowsPerPage() {
     const val = parseInt(document.getElementById("rowsPerPageSelect").value, 10);
