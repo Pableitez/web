@@ -123,6 +123,38 @@ function generateFilterSidebar(headers) {
       const wrapper = document.createElement("div");
       wrapper.className = "filter-wrapper";
     
+      const collapsible = document.createElement("div");
+      collapsible.className = "filter-collapsible";
+    
+      const header = document.createElement("div");
+      header.className = "filter-header";
+    
+      const title = document.createElement("span");
+      title.textContent = col;
+      header.appendChild(title);
+    
+      const toggleIcon = document.createElement("span");
+      toggleIcon.className = "toggle-icon";
+      toggleIcon.textContent = "▼";
+      header.appendChild(toggleIcon);
+    
+      const resetBtn = document.createElement("button");
+      resetBtn.textContent = "✕";
+      resetBtn.className = "filter-reset-btn";
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        select.selectedIndex = -1;
+        Array.from(select.options).forEach(opt => opt.selected = false);
+        delete filterValues[col];
+        div.classList.remove("active");
+        applyFilters();
+      });
+      header.appendChild(resetBtn);
+    
+      const content = document.createElement("div");
+      content.className = "filter-content";
+    
       const select = document.createElement("select");
       select.multiple = true;
       select.dataset.key = col;
@@ -133,8 +165,7 @@ function generateFilterSidebar(headers) {
           ...new Set(
             originalData.map(row => row[col])
               .map(val => (val === null || val === undefined) ? "" : val.toString().trim())
-          )
-        ].slice(0, 200);
+        )].slice(0, 200);
     
         if (uniqueValues.includes("")) {
           const opt = document.createElement("option");
@@ -147,7 +178,7 @@ function generateFilterSidebar(headers) {
         allOption.value = "__ALL__";
         allOption.textContent = "— All —";
         select.appendChild(allOption);
-
+    
         uniqueValues
           .filter(val => val !== "")
           .forEach(val => {
@@ -156,78 +187,75 @@ function generateFilterSidebar(headers) {
             option.textContent = val;
             select.appendChild(option);
           });
+
+          const choicesInstance = new Choices(select, {
+            removeItemButton: true,
+            placeholder: true,
+            placeholderValue: 'Select options',
+            shouldSort: false,
+            searchEnabled: true
+          });
+          
+
+
       } catch (err) {
         console.warn(`Error generando opciones para ${col}:`, err);
       }
     
-      // Botón de reset individual
-      const resetBtn = document.createElement("button");
-      resetBtn.textContent = "✕";
-      resetBtn.className = "filter-reset-btn";
-      resetBtn.addEventListener("click", (e) => {
+      // Evento toggle collapse
+      header.addEventListener("click", () => {
+        content.classList.toggle("visible");
+        toggleIcon.textContent = content.classList.contains("visible") ? "▲" : "▼";
+      });
+    
+      // Evento selección personalizado
+      select.addEventListener("mousedown", function (e) {
         e.preventDefault();
-        select.selectedIndex = -1;
-        delete filterValues[col];
-        div.classList.remove("active");
+        const option = e.target;
+        if (option.tagName !== "OPTION") return;
+        option.selected = !option.selected;
+    
+        const selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
+        const allOption = select.querySelector('option[value="__ALL__"]');
+        const emptyOption = select.querySelector('option[value="__EMPTY__"]');
+        const realValues = Array.from(select.options)
+          .map(opt => opt.value)
+          .filter(v => v !== "__ALL__" && v !== "__EMPTY__");
+    
+        if (option.value === "__ALL__") {
+          Array.from(select.options).forEach(opt => {
+            if (opt.value !== "__ALL__") opt.selected = true;
+          });
+          option.selected = true;
+        }
+    
+        if (
+          selectedValues.includes("__ALL__") &&
+          selectedValues.length < realValues.length + (emptyOption ? 1 : 0)
+        ) {
+          if (allOption) allOption.selected = false;
+        }
+    
+        const final = Array.from(select.selectedOptions).map(opt => opt.value);
+        if (final.length > 0) {
+          filterValues[col] = final;
+          div.classList.add("active");
+        } else {
+          delete filterValues[col];
+          div.classList.remove("active");
+        }
+    
         applyFilters();
       });
     
-      // Evento de cambio
-    // Evento mousedown personalizado para control total
-select.addEventListener("mousedown", function (e) {
-  e.preventDefault(); // previene el comportamiento por defecto
-
-  const option = e.target;
-  if (option.tagName !== "OPTION") return;
-
-  option.selected = !option.selected; // toggle manual
-
-  const selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
-  const allOption = select.querySelector('option[value="__ALL__"]');
-  const emptyOption = select.querySelector('option[value="__EMPTY__"]');
-  const realValues = Array.from(select.options)
-    .map(opt => opt.value)
-    .filter(v => v !== "__ALL__" && v !== "__EMPTY__");
-
-  // Si seleccionas "All", marcar todo
-  if (option.value === "__ALL__") {
-    Array.from(select.options).forEach(opt => {
-      if (opt.value !== "__ALL__") opt.selected = true;
-    });
-    option.selected = true; // All se mantiene seleccionado
-  }
-
-  // Si "All" está marcado y desmarcas otra opción, desmarcar "All"
-  if (
-    selectedValues.includes("__ALL__") &&
-    selectedValues.length < realValues.length + (emptyOption ? 1 : 0)
-  ) {
-    if (allOption) allOption.selected = false;
-  }
-
-  // Actualiza estado visual y lógica
-  const final = Array.from(select.selectedOptions).map(opt => opt.value);
-  if (final.length > 0) {
-    filterValues[col] = final;
-    div.classList.add("active");
-  } else {
-    delete filterValues[col];
-    div.classList.remove("active");
-  }
-
-  applyFilters();
-});
-
-      
-    
-      // Armar filtro
-      label.appendChild(resetBtn);
-      div.appendChild(label);
-      wrapper.appendChild(select);
+      // Estructura final
+      content.appendChild(select);
+      collapsible.appendChild(header);
+      collapsible.appendChild(content);
+      wrapper.appendChild(collapsible);
       div.appendChild(wrapper);
       refGroup.appendChild(div);
     }
-    
     
   });
 }

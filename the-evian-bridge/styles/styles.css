@@ -774,16 +774,46 @@
   color: #c00;
 }
 
+.filter-collapsible {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  background-color: #f6f9fc;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.filter-header {
+  padding: 0.45rem 0.6rem;
+  font-weight: 600;
+  background-color: #e1ecf4;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-header:hover {
+  background-color: #d0e6f3;
+}
+
+.toggle-icon {
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+
+.filter-content {
+  display: none;
+  padding: 0.5rem;
+}
+
+.filter-content.visible {
+  display: block;
+}
+
 .filter-multiselect {
   width: 100%;
-  padding: 0.4rem;
+  height: 110px;
   font-size: 0.9rem;
-  border: 1px solid #999;
-  border-radius: 6px;
-  background-color: #fff;
-  color: #333;
-  min-height: 3.5rem;
-  max-height: 6rem;
-  overflow-y: auto;
-  resize: vertical;
+  padding: 0.3rem;
 }
