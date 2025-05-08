@@ -27,10 +27,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 // ------------ Panel dinamico de filtros -------------- //
-
 function generateFilterSidebar(headers) {
   const container = document.getElementById("filterInputsContainer");
   container.innerHTML = "";
+
   headers.forEach((col) => {
     const div = document.createElement("div");
     div.className = "filter-block";
@@ -38,33 +38,171 @@ function generateFilterSidebar(headers) {
     const label = document.createElement("label");
     label.textContent = col;
 
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = `Search ${col}`;
-    input.dataset.key = col;
-    input.addEventListener("input", () => {
-      filterValues[col] = input.value.trim().toLowerCase();
-      applyFilters();
-    });
-
     div.appendChild(label);
-    div.appendChild(input);
+
+    if (isDateField(col)) {
+      const startInput = document.createElement("input");
+      startInput.type = "date";
+      startInput.className = "filter-date"; 
+      startInput.placeholder = "From";
+      startInput.dataset.key = col + "_start";
+    
+      const endInput = document.createElement("input");
+      endInput.type = "date";
+      endInput.className = "filter-date"; 
+      endInput.placeholder = "To";
+      endInput.dataset.key = col + "_end";
+    
+      const emptyLabel = document.createElement("label");
+      emptyLabel.className = "filter-empty-label";
+      
+      const emptyInput = document.createElement("input");
+      emptyInput.type = "checkbox";
+      emptyInput.dataset.key = col + "_empty";
+      emptyInput.className = "filter-empty-checkbox";
+    
+      emptyLabel.appendChild(emptyInput);
+      emptyLabel.append(" Empty only");
+    
+      // Event listeners
+      startInput.addEventListener("input", () => {
+        filterValues[col + "_start"] = startInput.value;
+        applyFilters();
+      });
+    
+      endInput.addEventListener("input", () => {
+        filterValues[col + "_end"] = endInput.value;
+        applyFilters();
+      });
+    
+      emptyInput.addEventListener("change", () => {
+        filterValues[col + "_empty"] = emptyInput.checked;
+        applyFilters();
+      });
+    
+      // Append inputs to the filter div
+      div.appendChild(startInput);
+      div.appendChild(endInput);
+      div.appendChild(emptyLabel);
+    }
+    
+
+ else {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = `Search ${col}`;
+      input.dataset.key = col;
+      input.addEventListener("input", () => {
+        filterValues[col] = input.value.trim().toLowerCase();
+        applyFilters();
+      });
+      div.appendChild(input);
+    }
+
     container.appendChild(div);
   });
 }
 
-
-  function applyFilters() {
-    filteredData = originalData.filter((row) => {
-      return Object.entries(filterValues).every(([key, value]) => {
-        const cell = row[key] ? row[key].toString().toLowerCase() : "";
-        return cell.includes(value);
-      });
-    });
-
-    const pageSize = getRowsPerPage();
-    displayTable(filteredData, 1, pageSize);
+function applyFilters() {
+  function parseDateStrict(value) {
+    if (!value) return null;
+  
+    // Match dd/mm/yyyy o dd-mm-yyyy con o sin hora
+    const match = value.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})(?:\s+\d{2}:\d{2})?$/);
+    if (match) {
+      const [, day, month, year] = match;
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    }
+  
+    // Fallback: ISO format or full datetime string
+    const parsed = new Date(value);
+    if (!isNaN(parsed)) {
+      return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()); // Strip time
+    }
+  
+    return null;
   }
+  
+  filteredData = originalData.filter((row) => {
+    return Object.keys(filterValues).every((key) => {
+      if (key.endsWith("_start") || key.endsWith("_end") || key.endsWith("_empty")) {
+        const baseKey = key.replace(/_(start|end|empty)$/, "");
+        const rawValue = row[baseKey];
+        const value = rawValue ? rawValue.trim() : "";
+
+        const start = filterValues[baseKey + "_start"];
+        const end = filterValues[baseKey + "_end"];
+        const empty = filterValues[baseKey + "_empty"];
+
+        if (empty) return value === "";
+
+        if (!value) return false;
+
+        const cellDate = parseDateStrict(value);
+        if (!cellDate) return false;
+
+        if (start) {
+          const startDate = parseDateStrict(start);
+          if (!startDate || cellDate < startDate) return false;
+        }
+
+        if (end) {
+          const endDate = parseDateStrict(end);
+          if (!endDate || cellDate > endDate) return false;
+        }
+
+        return true;
+      } else {
+        const cell = row[key] ? row[key].toString().toLowerCase() : "";
+        return cell.includes(filterValues[key]);
+      }
+    });
+  });
+
+  const pageSize = getRowsPerPage();
+  displayTable(filteredData, 1, pageSize);
+}
+
+
+function isDateField(key) {
+  let validCount = 0;
+  let totalChecked = 0;
+
+  for (const row of originalData) {
+    const val = row[key];
+    if (!val || typeof val !== "string") continue;
+
+    const trimmed = val.trim();
+
+    // Requiere números y separadores comunes
+    const likelyDate = /[\/\-]/.test(trimmed) && /\d{2}/.test(trimmed);
+    if (!likelyDate) continue;
+
+    totalChecked++;
+
+    const parsed = parseFlexibleDate(trimmed);
+    if (parsed instanceof Date && !isNaN(parsed)) validCount++;
+
+    if (totalChecked >= 10) break; // Suficientes muestras
+  }
+
+  return totalChecked > 0 && (validCount / totalChecked) >= 0.6;
+}
+
+function parseFlexibleDate(value) {
+  if (!value) return null;
+
+  // Formato dd/mm/yyyy hh:mm o dd-mm-yyyy hh:mm
+  const match = value.match(/^(\d{2})[\/\-](\d{2})[\/\-](\d{4})(?:\s+(\d{2}):(\d{2}))?$/);
+  if (match) {
+    const [, day, month, year, hours = "00", minutes = "00"] = match;
+    return new Date(`${year}-${month}-${day}T${hours}:${minutes}`);
+  }
+
+  // Intento final con Date.parse
+  const parsed = Date.parse(value);
+  return isNaN(parsed) ? null : new Date(parsed);
+}
 
   function getRowsPerPage() {
     const val = parseInt(document.getElementById("rowsPerPageSelect").value, 10);
