@@ -216,6 +216,18 @@ function generateFilterSidebar(headers) {
     document.getElementById("leftFilterPanel").classList.add("hidden");
     document.getElementById("overlay").classList.add("hidden");
   });
+
+  document.getElementById("closeColumnsPanel").addEventListener("click", () => {
+    document.getElementById("columnsPanel").classList.add("hidden");
+    document.getElementById("overlay").classList.add("hidden");
+  });
+  
+  document.getElementById("closeFiltersPanel").addEventListener("click", () => {
+    document.getElementById("leftFilterPanel").classList.add("hidden");
+    document.getElementById("overlay").classList.add("hidden");
+  });
+  
+
   document.getElementById("saveViewBtn").addEventListener("click", () => {
     const name = prompt("Enter a name for this view:");
     if (!name) return;
@@ -260,7 +272,8 @@ function generateFilterSidebar(headers) {
       const li = document.createElement("li");
       li.textContent = name;
       const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
+      delBtn.textContent = "x";
+      delBtn.classList.add("panel-action-btn--small");
       delBtn.onclick = () => {
         delete views[name];
         localStorage.setItem("columnViews", JSON.stringify(views));

@@ -30,10 +30,12 @@
 
   <!-- 🧭 Panel lateral izquierdo para filtros -->
   <div id="leftFilterPanel" class="left-panel hidden">
-    <h3>Filters</h3>
-    <div id="filterInputsContainer" class="filter-inputs"></div>
+    <div class="offcanvas-header">
+      <h3>Filters</h3>
+      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">✖</button>
+    </div>
+    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
   </div>
-
   <!-- 🧱 Contenido principal -->
   <main class="main-content">
 
@@ -58,13 +60,13 @@
   <div id="columnsPanel" class="offcanvas-panel hidden">
     <div class="offcanvas-header">
       <h3>Select columns</h3>
-      <button id="closeColumnsPanel">✖</button>
+      <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">✖</button>
     </div>
     <div id="columnVisibility" class="offcanvas-body"></div>
 
     <div class="views-controls">
-      <button id="saveViewBtn">Save View</button>
-      <button id="manageViewsBtn">Manage Views</button>
+      <button id="saveViewBtn" class="panel-action-btn">Save View</button>
+      <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
     </div>
   </div>
 
