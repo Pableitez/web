@@ -204,14 +204,18 @@ function generateFilterSidebar(headers) {
   
   document.getElementById("toggleFiltersBtn").addEventListener("click", () => {
     const panel = document.getElementById("leftFilterPanel");
+    const overlay = document.getElementById("overlay");
+  
     panel.classList.toggle("hidden");
+    overlay.classList.toggle("hidden");
   });
+  
 
-  document.getElementById("closeColumnsPanel").addEventListener("click", () => {
+  document.getElementById("overlay").addEventListener("click", () => {
     document.getElementById("columnsPanel").classList.add("hidden");
-    document.getElementById("overlay").classList.add("hidden"); 
+    document.getElementById("leftFilterPanel").classList.add("hidden");
+    document.getElementById("overlay").classList.add("hidden");
   });
-
   document.getElementById("saveViewBtn").addEventListener("click", () => {
     const name = prompt("Enter a name for this view:");
     if (!name) return;

@@ -617,7 +617,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 260px;
+    width: 400px;
     height: 100vh;
     background-color: #f9f9f9;
     border-right: 1px solid #ccc;
@@ -645,10 +645,7 @@
     width: 100%;
   }
   
-  .left-panel {
-    transition: transform 0.3s ease;
-  }
-  
+
   .left-panel.hidden {
     transform: translateX(-100%);
   }
