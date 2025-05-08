@@ -759,3 +759,31 @@
   width: 100%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
+
+.filter-reset-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.filter-reset-btn:hover {
+  color: #c00;
+}
+
+.filter-multiselect {
+  width: 100%;
+  padding: 0.4rem;
+  font-size: 0.9rem;
+  border: 1px solid #999;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  min-height: 3.5rem;
+  max-height: 6rem;
+  overflow-y: auto;
+  resize: vertical;
+}

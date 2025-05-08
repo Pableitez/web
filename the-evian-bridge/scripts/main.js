@@ -120,48 +120,114 @@ function generateFilterSidebar(headers) {
     } 
     
     else {
-      const input = document.createElement("input");
-      input.type = "text";
-      input.placeholder = `Search ${col}`;
-      input.dataset.key = col;
+      const wrapper = document.createElement("div");
+      wrapper.className = "filter-wrapper";
     
-      const listId = `list-${col.replace(/\s+/g, '-').toLowerCase()}`;
-      input.setAttribute("list", listId);
-    
-      const datalist = document.createElement("datalist");
-      datalist.id = listId;
+      const select = document.createElement("select");
+      select.multiple = true;
+      select.dataset.key = col;
+      select.className = "filter-multiselect";
     
       try {
         const uniqueValues = [
           ...new Set(
             originalData.map(row => row[col])
-            .filter(val => val && typeof val === "string" && val.trim() !== "")
+              .map(val => (val === null || val === undefined) ? "" : val.toString().trim())
           )
-        ].slice(0, 100); // limita las opciones sugeridas
+        ].slice(0, 200);
     
-        uniqueValues.forEach(val => {
-          const option = document.createElement("option");
-          option.value = val;
-          datalist.appendChild(option);
-        });
+        if (uniqueValues.includes("")) {
+          const opt = document.createElement("option");
+          opt.value = "__EMPTY__";
+          opt.textContent = "— Empty —";
+          select.appendChild(opt);
+        }
+    
+        const allOption = document.createElement("option");
+        allOption.value = "__ALL__";
+        allOption.textContent = "— All —";
+        select.appendChild(allOption);
+
+        uniqueValues
+          .filter(val => val !== "")
+          .forEach(val => {
+            const option = document.createElement("option");
+            option.value = val;
+            option.textContent = val;
+            select.appendChild(option);
+          });
       } catch (err) {
-        console.warn(`Error al generar opciones para ${col}:`, err);
+        console.warn(`Error generando opciones para ${col}:`, err);
       }
     
-      input.addEventListener("input", () => {
-        const values = input.value
-          .split(",")
-          .map(v => v.trim().toLowerCase())
-          .filter(Boolean);
-        filterValues[col] = values;
+      // Botón de reset individual
+      const resetBtn = document.createElement("button");
+      resetBtn.textContent = "✕";
+      resetBtn.className = "filter-reset-btn";
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        select.selectedIndex = -1;
+        delete filterValues[col];
+        div.classList.remove("active");
         applyFilters();
       });
     
+      // Evento de cambio
+    // Evento mousedown personalizado para control total
+select.addEventListener("mousedown", function (e) {
+  e.preventDefault(); // previene el comportamiento por defecto
+
+  const option = e.target;
+  if (option.tagName !== "OPTION") return;
+
+  option.selected = !option.selected; // toggle manual
+
+  const selectedValues = Array.from(select.selectedOptions).map(opt => opt.value);
+  const allOption = select.querySelector('option[value="__ALL__"]');
+  const emptyOption = select.querySelector('option[value="__EMPTY__"]');
+  const realValues = Array.from(select.options)
+    .map(opt => opt.value)
+    .filter(v => v !== "__ALL__" && v !== "__EMPTY__");
+
+  // Si seleccionas "All", marcar todo
+  if (option.value === "__ALL__") {
+    Array.from(select.options).forEach(opt => {
+      if (opt.value !== "__ALL__") opt.selected = true;
+    });
+    option.selected = true; // All se mantiene seleccionado
+  }
+
+  // Si "All" está marcado y desmarcas otra opción, desmarcar "All"
+  if (
+    selectedValues.includes("__ALL__") &&
+    selectedValues.length < realValues.length + (emptyOption ? 1 : 0)
+  ) {
+    if (allOption) allOption.selected = false;
+  }
+
+  // Actualiza estado visual y lógica
+  const final = Array.from(select.selectedOptions).map(opt => opt.value);
+  if (final.length > 0) {
+    filterValues[col] = final;
+    div.classList.add("active");
+  } else {
+    delete filterValues[col];
+    div.classList.remove("active");
+  }
+
+  applyFilters();
+});
+
+      
+    
+      // Armar filtro
+      label.appendChild(resetBtn);
       div.appendChild(label);
-      div.appendChild(input);
-      div.appendChild(datalist);
+      wrapper.appendChild(select);
+      div.appendChild(wrapper);
       refGroup.appendChild(div);
     }
+    
     
   });
 }
@@ -218,9 +284,18 @@ function applyFilters() {
 
         return true;
       } else {
+        const filterVal = filterValues[key];
         const cell = row[key] ? row[key].toString().toLowerCase() : "";
-        return cell.includes(filterValues[key]);
+        
+        if (Array.isArray(filterVal)) {
+          return filterVal.some(val =>
+            val === "__EMPTY__" ? cell === "" : cell === val.toLowerCase()
+          );
+        } else {
+          return cell.includes(filterVal);
+        }
       }
+
     });
   });
 
