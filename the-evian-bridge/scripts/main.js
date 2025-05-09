@@ -784,7 +784,7 @@ document.getElementById("resetFiltersBtn").addEventListener("click", () => {
 
   // Mostrar mensaje temporal
   const msg = document.createElement("div");
-  msg.textContent = "All filters have been reset";
+  msg.textContent = "All filters have been reset.";
   msg.style.position = "fixed";
   msg.style.top = "20px";
   msg.style.left = "50%";

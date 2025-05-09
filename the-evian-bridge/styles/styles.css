@@ -888,3 +888,90 @@
 #resetFiltersBtn:hover {
   background-color: #ffc2c2;
 }
+.manage-views-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.manage-views-list .view-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #0a2337;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.manage-views-list .view-item button {
+  background-color: #d9534f;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.manage-views-list .view-item button:hover {
+  background-color: #c9302c;
+}
+
+.modal-close-btn {
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: #14344d;
+}
+#savedFilterViewsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#savedFilterViewsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: #0a2337;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#savedFilterViewsList li button {
+  background-color: #d9534f;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+#savedFilterViewsList li button:hover {
+  background-color: #c9302c;
+}
