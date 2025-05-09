@@ -86,6 +86,28 @@ function generateFilterSidebar(headers) {
     label.textContent = col;
 
     if (isDateField(col)) {
+      // ESTRUCTURA TIPO REFERENCIA PARA FECHAS
+      const wrapper = document.createElement("div");
+      wrapper.className = "filter-wrapper";
+
+      const collapsible = document.createElement("div");
+      collapsible.className = "filter-collapsible";
+
+      const header = document.createElement("div");
+      header.className = "filter-header";
+
+      const title = document.createElement("span");
+      title.textContent = col;
+      header.appendChild(title);
+
+      const toggleIcon = document.createElement("span");
+      toggleIcon.className = "toggle-icon";
+      toggleIcon.textContent = "▼";
+      header.appendChild(toggleIcon);
+
+      const content = document.createElement("div");
+      content.className = "filter-content"; // cerrado por defecto
+
       const startInput = document.createElement("input");
       startInput.type = "date";
       startInput.className = "filter-date";
@@ -123,9 +145,19 @@ function generateFilterSidebar(headers) {
         applyFilters();
       });
 
-      dateGroup.appendChild(div);
+      // Estructura final tipo collapsible
+      content.appendChild(div);
+      collapsible.appendChild(header);
+      collapsible.appendChild(content);
+      wrapper.appendChild(collapsible);
+      dateGroup.appendChild(wrapper);
 
-    } 
+      // Evento toggle visual
+      header.addEventListener("click", () => {
+        content.classList.toggle("visible");
+        toggleIcon.textContent = content.classList.contains("visible") ? "▲" : "▼";
+      });
+    }
     
     else {
       const wrapper = document.createElement("div");
@@ -149,19 +181,13 @@ function generateFilterSidebar(headers) {
       const resetBtn = document.createElement("button");
       resetBtn.textContent = "✕";
       resetBtn.className = "filter-reset-btn";
-      resetBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        select.selectedIndex = -1;
-        Array.from(select.options).forEach(opt => opt.selected = false);
-        delete filterValues[col];
-        div.classList.remove("active");
-        applyFilters();
-      });
       header.appendChild(resetBtn);
     
       const content = document.createElement("div");
-      content.className = "filter-content";
+      content.className = "filter-content"; // cerrado por defecto
+    
+      const div = document.createElement("div");
+      div.className = "filter-block";
     
       const select = document.createElement("select");
       select.multiple = true;
@@ -195,28 +221,30 @@ function generateFilterSidebar(headers) {
             option.textContent = val;
             select.appendChild(option);
           });
-
-          const choicesInstance = new Choices(select, {
-            removeItemButton: true,
-            placeholder: true,
-            placeholderValue: 'Select options',
-            shouldSort: false,
-            searchEnabled: true
-          });
-          
-
-
+    
+        new Choices(select, {
+          removeItemButton: true,
+          placeholder: true,
+          placeholderValue: 'Select options',
+          shouldSort: false,
+          searchEnabled: true
+        });
+    
       } catch (err) {
         console.warn(`Error generando opciones para ${col}:`, err);
       }
     
-      // Evento toggle collapse
-      header.addEventListener("click", () => {
-        content.classList.toggle("visible");
-        toggleIcon.textContent = content.classList.contains("visible") ? "▲" : "▼";
+      // Eventos
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        select.selectedIndex = -1;
+        Array.from(select.options).forEach(opt => opt.selected = false);
+        delete filterValues[col];
+        div.classList.remove("active");
+        applyFilters();
       });
     
-      // Evento selección personalizado
       select.addEventListener("mousedown", function (e) {
         e.preventDefault();
         const option = e.target;
@@ -256,18 +284,22 @@ function generateFilterSidebar(headers) {
         applyFilters();
       });
     
-      // Estructura final
-      content.appendChild(select);
+      // Montaje final
+      div.appendChild(select);
+      content.appendChild(div);
       collapsible.appendChild(header);
       collapsible.appendChild(content);
       wrapper.appendChild(collapsible);
-      div.appendChild(wrapper);
-      refGroup.appendChild(div);
-    }
+      refGroup.appendChild(wrapper);
     
-  });
-}
-
+      // Evento toggle visual
+      header.addEventListener("click", () => {
+        content.classList.toggle("visible");
+        toggleIcon.textContent = content.classList.contains("visible") ? "▲" : "▼";
+      });
+    }
+  }); // ← cierre del headers.forEach
+}  
 
 
 function applyFilters() {
