@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
         generateColumnVisibilityControls(currentHeaders);
         applyFilters();
         populateSavedViews();
+        populateFilterViews();
         const globalInput = document.getElementById("globalSearchInput");
         if (globalInput) {
           globalInput.addEventListener("input", () => {
@@ -58,11 +59,11 @@ function generateFilterSidebar(headers) {
 
   // Contenedores de grupos
   const dateGroup = document.createElement("div");
-  dateGroup.className = "filter-group";
-
+  dateGroup.className = "filter-group collapsed";
+  
   const refGroup = document.createElement("div");
-  refGroup.className = "filter-group";
-
+  refGroup.className = "filter-group collapsed";
+  
   // Eventos de toggle
   dateToggle.addEventListener("click", () => {
     dateGroup.classList.toggle("collapsed");
@@ -112,11 +113,13 @@ function generateFilterSidebar(headers) {
       startInput.type = "date";
       startInput.className = "filter-date";
       startInput.dataset.key = col + "_start";
+      startInput.setAttribute("lang", "en");
 
       const endInput = document.createElement("input");
       endInput.type = "date";
       endInput.className = "filter-date";
       endInput.dataset.key = col + "_end";
+      endInput.setAttribute("lang", "en");
 
       const emptyInput = document.createElement("input");
       emptyInput.type = "checkbox";
@@ -625,71 +628,184 @@ if (recordCountEl) {
   });
   
 
-  document.getElementById("manageViewsBtn").addEventListener("click", () => {
-    const modal = document.getElementById("manageViewsModal");
-    const list = document.getElementById("savedViewsList");
-    const views = JSON.parse(localStorage.getItem("columnViews") || "{}");
+ // =================== GESTIÓN DE VISTAS DE COLUMNAS ===================
+document.getElementById("manageViewsBtn").addEventListener("click", () => {
+  const modal = document.getElementById("manageViewsModal");
+  const list = document.getElementById("savedViewsList");
+  const views = JSON.parse(localStorage.getItem("columnViews") || "{}");
 
-    list.innerHTML = "";
-    Object.entries(views).forEach(([name, config]) => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "x";
-      delBtn.classList.add("panel-action-btn--small");
-      delBtn.onclick = () => {
-        delete views[name];
-        localStorage.setItem("columnViews", JSON.stringify(views));
-        populateSavedViews();
-        li.remove();
-      };
-      li.appendChild(delBtn);
-      list.appendChild(li);
-    });
-
-    modal.classList.remove("hidden");
+  list.innerHTML = "";
+  Object.entries(views).forEach(([name, config]) => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "x";
+    delBtn.classList.add("panel-action-btn--small");
+    delBtn.onclick = () => {
+      delete views[name];
+      localStorage.setItem("columnViews", JSON.stringify(views));
+      populateSavedViews();
+      li.remove();
+    };
+    li.appendChild(delBtn);
+    list.appendChild(li);
   });
 
-  document.getElementById("closeManageViews").addEventListener("click", () => {
-    document.getElementById("manageViewsModal").classList.add("hidden");
-  });
-
-  function populateSavedViews() {
-    const select = document.getElementById("viewSelect");
-    const views = JSON.parse(localStorage.getItem("columnViews") || "{}");
-  
-    select.innerHTML = "";
-  
-    // Insertar opción "All"
-    const allOption = document.createElement("option");
-    allOption.value = "All";
-    allOption.textContent = "All";
-    select.appendChild(allOption);
-  
-    // Insertar las demás vistas guardadas
-    Object.keys(views).forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      select.appendChild(option);
-    });
-  
-    // Seleccionar "All" por defecto
-    select.value = "All";
-  
-    // Aplicar vista All si existe
-    if (views["All"]) {
-      const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
-      views["All"].forEach((val, index) => {
-        checkboxes[index].checked = val;
-        toggleColumnVisibility(index, val);
-      });
-    }
-  }
-  
+  modal.classList.remove("hidden");
 });
 
+document.getElementById("closeManageViews").addEventListener("click", () => {
+  document.getElementById("manageViewsModal").classList.add("hidden");
+});
+
+document.getElementById("manageFilterViewsBtn").addEventListener("click", () => {
+  const modal = document.getElementById("manageFilterViewsModal");
+  const list = document.getElementById("savedFilterViewsList");
+  const filters = JSON.parse(localStorage.getItem("savedFilters") || "{}");
+
+  list.innerHTML = "";
+  Object.entries(filters).forEach(([name]) => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "x";
+    delBtn.classList.add("panel-action-btn--small");
+    delBtn.onclick = () => {
+      delete filters[name];
+      localStorage.setItem("savedFilters", JSON.stringify(filters));
+      populateFilterViews();
+      li.remove();
+    };
+    li.appendChild(delBtn);
+    list.appendChild(li);
+  });
+
+  modal.classList.remove("hidden");
+});
+
+document.getElementById("closeManageFilterViews").addEventListener("click", () => {
+  document.getElementById("manageFilterViewsModal").classList.add("hidden");
+});
+
+
+// =================== GUARDAR VISTA DE FILTROS ===================
+document.getElementById("saveFilterViewBtn").addEventListener("click", () => {
+  const name = prompt("Enter a name for this filter view:");
+  if (!name) return;
+
+  const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
+  saved[name] = { ...filterValues };
+  localStorage.setItem("savedFilters", JSON.stringify(saved));
+  populateFilterViews();
+  alert("Filter view saved.");
+});
+
+// =================== CARGAR VISTA DE FILTROS ===================
+document.getElementById("filterViewSelect").addEventListener("change", (e) => {
+  const name = e.target.value;
+  if (!name) return;
+
+  const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
+  if (!saved[name]) return;
+
+  Object.assign(filterValues, saved[name]);
+  applyFilters();
+});
+
+// =================== POBLAR SELECT DE FILTROS ===================
+function populateFilterViews() {
+  const filterSelect = document.getElementById("filterViewSelect");
+  const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
+
+  filterSelect.innerHTML = `<option value="">Select Filter View</option>`;
+  Object.keys(saved).forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    filterSelect.appendChild(option);
+  });
+}
+
+// =================== POBLAR SELECT DE COLUMNAS ===================
+function populateSavedViews() {
+  const select = document.getElementById("viewSelect");
+  const views = JSON.parse(localStorage.getItem("columnViews") || "{}");
+
+  select.innerHTML = "";
+
+  const allOption = document.createElement("option");
+  allOption.value = "All";
+  allOption.textContent = "All";
+  select.appendChild(allOption);
+
+  Object.keys(views).forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+
+  select.value = "All";
+
+  if (views["All"]) {
+    const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
+    views["All"].forEach((val, index) => {
+      checkboxes[index].checked = val;
+      toggleColumnVisibility(index, val);
+    });
+  }
+}
+
+document.getElementById("resetFiltersBtn").addEventListener("click", () => {
+  // Limpiar filtros activos
+  Object.keys(filterValues).forEach(k => delete filterValues[k]);
+
+  const selects = document.querySelectorAll(".filter-multiselect");
+  selects.forEach(select => {
+    Array.from(select.options).forEach(opt => opt.selected = false);
+    const parent = select.closest(".filter-block");
+    if (parent) parent.classList.remove("active");
+  });
+
+  const dateInputs = document.querySelectorAll("input[type='date']");
+  dateInputs.forEach(input => {
+    input.value = "";
+  });
+
+  const emptyCheckboxes = document.querySelectorAll(".filter-empty-checkbox");
+  emptyCheckboxes.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+
+  // Volver a "Select Filter View"
+  document.getElementById("filterViewSelect").value = "";
+
+  applyFilters();
+
+  // Mostrar mensaje temporal
+  const msg = document.createElement("div");
+  msg.textContent = "All filters have been reset";
+  msg.style.position = "fixed";
+  msg.style.top = "20px";
+  msg.style.left = "50%";
+  msg.style.transform = "translateX(-50%)";
+  msg.style.padding = "10px 20px";
+  msg.style.backgroundColor = "#ffe0e0";  // fondo rojizo suave
+  msg.style.color = "#8b0000";            // texto rojo oscuro
+  msg.style.borderRadius = "8px";
+  msg.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
+  msg.style.zIndex = "1000";
+
+  document.body.appendChild(msg);
+  setTimeout(() => msg.remove(), 3000);
+});
+
+
+// =================== CERRAR PANEL CON OVERLAY ===================
 document.getElementById("overlay").addEventListener("click", () => {
   document.getElementById("columnsPanel").classList.add("hidden");
+  document.getElementById("leftFilterPanel").classList.add("hidden");
   document.getElementById("overlay").classList.add("hidden");
 });
+});
+

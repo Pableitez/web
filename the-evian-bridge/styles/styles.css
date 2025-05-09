@@ -291,7 +291,7 @@
     position: fixed;
     right: 0;
     top: 0;
-    width: 300px;
+    width: 400px; /* igual que el left-panel */
     height: 100vh;
     background: #fff;
     border-left: 1px solid #ccc;
@@ -619,19 +619,24 @@
     top: 0;
     left: 0;
     width: 400px;
-    height: 100vh;
+    bottom: 0;
     background-color: #f9f9f9;
     border-right: 1px solid #ccc;
     padding: 1rem;
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
+    overflow-y: visible;
     z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
   }
   
   .left-panel h3 {
     margin-bottom: 1rem;
     color: #0a2337;
   }
+  
+
   
   .filter-inputs {
     display: flex;
@@ -837,4 +842,49 @@
   /* 🔧 Ajuste de márgenes */
   margin-top: 0.3rem;
   margin-bottom: 0.3rem;
+}
+
+.views-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.views-controls button {
+  min-width: 120px;
+}
+
+#filterViewSelect {
+  background-color: #d0e7ff; /* Amarillo tipo 'personalización' */
+  color: #0a2337;
+  font-weight: bold;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+#filterViewSelect:hover {
+  background-color: #d0e7ff;
+}
+
+#resetFiltersBtn {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+#resetFiltersBtn:hover {
+  background-color: #ffc2c2;
 }

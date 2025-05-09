@@ -1,101 +1,121 @@
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>The Bridge</title>
-    <link rel="stylesheet" href="../styles/styles.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Evian Bridge</title>
+  <link rel="stylesheet" href="../styles/styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+</head>
+<body>
 
-  </head>
-  <body>
+  <!-- Toolbar superior con título incluido -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+      <input type="file" id="csvFileInput" accept=".csv" hidden />
+    </div>
 
-    <!-- Toolbar superior con título incluido -->
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
-        <input type="file" id="csvFileInput" accept=".csv" hidden />
-      </div>
+    <div class="toolbar-title">
+      <h1>The Evian Bridge</h1>
+    </div>
 
-      <div class="toolbar-title">
-        <h1>The Bridge</h1>
-      </div>
+    <div class="toolbar-right">
+      <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
+      <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
+      <select id="viewSelect" class="toolbar-button">
+        <option value="">Select view</option>
+      </select>
+    </div>
+  </div>
 
-      <div class="toolbar-right">
-        <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
-        <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
-        <select id="viewSelect" class="toolbar-button">
-          <option value="">Select view</option>
+  <!-- 🧭 Panel lateral izquierdo para filtros -->
+  <div id="leftFilterPanel" class="left-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Filters</h3>
+      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
+    </div>
+
+    <!-- Selector de vistas de filtro (parte superior) -->
+    <div class="views-controls" style="margin-bottom: 1rem;">
+      <select id="filterViewSelect" class="toolbar-button">
+        <option value="">Select Filter View</option>
+      </select>
+    </div>
+
+    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+
+    <!-- Botones de guardado/gestión (parte inferior alineada) -->
+    <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+      <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+      <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+      <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
+        Reset Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- 🧱 Contenido principal -->
+  <main class="main-content">
+    <div class="table-toolbar">
+      <div style="flex: 1;"></div>
+      <input type="text" id="globalSearchInput" placeholder="Search..." class="search-input" />
+    </div>
+
+    <div class="table-container" id="tableContainer"></div>
+
+    <section class="table-controls">
+      <label for="rowsPerPageSelect">Rows per page:
+        <select id="rowsPerPageSelect">
+          <option value="20">20</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="-1">All</option>
         </select>
-      </div>
+      </label>
+      <div id="pagination" class="pagination"></div>
+      <span id="recordCount" style="margin-left: 1rem; font-weight: 500;"></span>
+    </section>
+  </main>
+
+  <!-- 🧾 Off-canvas panel para columnas -->
+  <div id="overlay" class="overlay hidden"></div>
+  <div id="columnsPanel" class="offcanvas-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Select columns</h3>
+      <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">x</button>
     </div>
+    <div id="columnVisibility" class="offcanvas-body"></div>
 
-    <!-- 🧭 Panel lateral izquierdo para filtros -->
-    <div id="leftFilterPanel" class="left-panel hidden">
-      <div class="offcanvas-header">
-        <h3>Filters</h3>
-        <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
-      </div>
-      <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+    <div class="views-controls">
+      <button id="saveViewBtn" class="panel-action-btn">Save View</button>
+      <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
     </div>
-    <!-- 🧱 Contenido principal -->
-    <main class="main-content">
-      <div class="table-toolbar">
-        <div style="flex: 1;"></div> <!-- Espaciador a la izquierda -->
-        <input
-          type="text"
-          id="globalSearchInput"
-          placeholder="Search..."
-          class="search-input"
-        />
-      </div>
-      
-      <div class="table-container" id="tableContainer"></div>
+  </div>
 
-      <section class="table-controls">
-        <label for="rowsPerPageSelect">Rows per page:
-          <select id="rowsPerPageSelect">
-            <option value="20">20</option>
-            <option value="50" selected>50</option>
-            <option value="100">100</option>
-            <option value="200">200</option>
-            <option value="-1">All</option>
-          </select>
-        </label>
-        <div id="pagination" class="pagination"></div>
-        <span id="recordCount" style="margin-left: 1rem; font-weight: 500;"></span>
-      </section>
-
-    </main>
-
-    <!-- 🧾 Off-canvas panel para columnas -->
-    <div id="overlay" class="overlay hidden"></div>
-    <div id="columnsPanel" class="offcanvas-panel hidden">
-      <div class="offcanvas-header">
-        <h3>Select columns</h3>
-        <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">x</button>
-      </div>
-      <div id="columnVisibility" class="offcanvas-body"></div>
-
-      <div class="views-controls">
-        <button id="saveViewBtn" class="panel-action-btn">Save View</button>
-        <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
-      </div>
+  <!-- 🗂 Modal para gestionar vistas -->
+  <div id="manageViewsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Manage Saved Views</h2>
+      <ul id="savedViewsList"></ul>
+      <button id="closeManageViews">Close</button>
     </div>
+  </div>
 
-    <!-- 🗂 Modal para gestionar vistas -->
-    <div id="manageViewsModal" class="modal hidden">
-      <div class="modal-content">
-        <h2>Manage Saved Views</h2>
-        <ul id="savedViewsList"></ul>
-        <button id="closeManageViews">Close</button>
-      </div>
+  <!-- 📋 Modal para gestionar vistas de filtros -->
+  <div id="manageFilterViewsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Manage Filter Views</h2>
+      <ul id="savedFilterViewsList"></ul>
+      <button id="closeManageFilterViews">Close</button>
     </div>
+  </div>
 
-    <!-- 📦 CSV parser -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <script src="../scripts/main.js"></script>
+  <!-- 📦 CSV parser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="../scripts/main.js"></script>
 
-  </body>
-  </html>
+</body>
+</html>
