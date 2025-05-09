@@ -1,5 +1,31 @@
-document.addEventListener("DOMContentLoaded", function () {
+// 📦 IndexedDB setup
+let db;
+const DB_NAME = 'embarquesDB';
+const STORE_NAME = 'csvVersions';
 
+function initDB() {
+  const request = indexedDB.open(DB_NAME, 1);
+
+  request.onupgradeneeded = function (event) {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+    }
+  };
+
+  request.onsuccess = function (event) {
+    db = event.target.result;
+    console.log('IndexedDB listo');
+  };
+
+  request.onerror = function (event) {
+    console.error('Error con IndexedDB:', event.target.errorCode);
+  };
+}
+
+// 🚀 App initialization
+document.addEventListener("DOMContentLoaded", function () {
+  initDB();
   let originalData = [];
   let filteredData = [];
   let currentPage = 1;
