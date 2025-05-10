@@ -33,28 +33,44 @@
   </div>
 
   <!-- 🧭 Panel lateral izquierdo para filtros -->
-  <div id="leftFilterPanel" class="left-panel hidden">
-    <div class="offcanvas-header">
-      <h3>Filters</h3>
-      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
-    </div>
+<!-- 🧭 Panel lateral izquierdo para filtros -->
+<div id="leftFilterPanel" class="left-panel hidden">
+  <div class="offcanvas-header">
+    <h3>Filters</h3>
+    <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
+  </div>
 
-    <div class="views-controls" style="margin-bottom: 1rem;">
-      <select id="filterViewSelect" class="toolbar-button">
-        <option value="">Select Filter View</option>
+  <!-- 🔄 Saved Filters desplegable como botón -->
+<div class="filter-wrapper" style="margin-bottom: 1.5rem;">
+  <div class="filter-collapsible">
+    <div class="filter-header" id="toggleSavedFilters">
+      <span>Saved Filters</span>
+      <span class="toggle-icon">▼</span>
+    </div>
+    <div class="filter-content visible" id="savedFiltersContainer">
+      <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
+        <!-- opciones -->
       </select>
     </div>
-
-    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
-
-    <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-      <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
-      <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
-      <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
-        Reset Filters
-      </button>
-    </div>
   </div>
+</div>
+
+
+
+  <!-- 🔧 Filtros dinámicos por campo -->
+  <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+
+  <!-- 🎛️ Controles -->
+  <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+    <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+    <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
+      Reset Filters
+    </button>
+  </div>
+</div>
+
+
 
   <!-- 🧱 Contenido principal -->
   <main class="main-content">
@@ -76,7 +92,8 @@
         </select>
       </label>
       <div id="pagination" class="pagination"></div>
-      <span id="recordCount" style="margin-left: 1rem; font-weight: 500;"></span>
+      <span id="activeFilterName"></span>
+      <span id="recordCount"></span>
     </section>
   </main>
 

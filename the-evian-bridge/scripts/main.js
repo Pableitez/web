@@ -48,6 +48,18 @@ document.addEventListener("DOMContentLoaded", function () {
         applyFilters();
         populateSavedViews();
         populateFilterViews();
+
+        const toggleHeader = document.getElementById("toggleSavedFilters");
+if (toggleHeader) {
+  toggleHeader.addEventListener("click", () => {
+    const container = document.getElementById("savedFiltersContainer");
+    const icon = toggleHeader.querySelector(".toggle-icon");
+    container.classList.toggle("visible");
+    icon.textContent = container.classList.contains("visible") ? "▲" : "▼";
+  });
+}
+
+        
         const globalInput = document.getElementById("globalSearchInput");
         if (globalInput) {
           globalInput.addEventListener("input", () => {
@@ -508,6 +520,12 @@ const recordCountEl = document.getElementById("recordCount");
 if (recordCountEl) {
   recordCountEl.textContent = `Total: ${data.length} records`;
 }
+const filterNameEl = document.getElementById("activeFilterName");
+if (filterNameEl) {
+  const select = document.getElementById("filterViewSelect");
+  const selectedNames = Array.from(select.selectedOptions).map(opt => opt.value);
+  filterNameEl.textContent = selectedNames.length ? `Filters: ${selectedNames.join(", ")}` : "";
+}
   }
 
   function createPaginationControls(totalRows, pageSize) {
@@ -787,25 +805,31 @@ document.getElementById("saveFilterViewBtn").addEventListener("click", () => {
 
 
 // =================== CARGAR VISTA DE FILTROS ===================
-document.getElementById("filterViewSelect").addEventListener("change", (e) => {
-  const name = e.target.value;
-  if (!name) return;
+document.getElementById("filterViewSelect").addEventListener("change", () => {
+  const select = document.getElementById("filterViewSelect");
+  const selectedOptions = Array.from(select.selectedOptions).map(opt => opt.value);
 
   const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
-  const view = saved[name];
-  if (!view) return;
-
   const currentSignature = currentHeaders.slice().sort().join("|");
 
-  if (view.signature !== currentSignature) {
-    alert("This filter view does not match the current CSV structure.");
-    e.target.value = ""; // reset selector
-    return;
-  }
+  // Limpiar filtros previos
+  Object.keys(filterValues).forEach(k => delete filterValues[k]);
 
-  Object.assign(filterValues, view.values);
+  selectedOptions.forEach(name => {
+    const view = saved[name];
+    if (!view) return;
+
+    if (view.signature !== currentSignature) {
+      console.warn(`Filter "${name}" is incompatible and will be ignored.`);
+      return;
+    }
+
+    Object.assign(filterValues, view.values); // combina todos
+  });
+
   applyFilters();
 });
+
 
 
 // =================== POBLAR SELECT DE FILTROS ===================
@@ -814,7 +838,8 @@ function populateFilterViews() {
   const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
   const currentSignature = currentHeaders.slice().sort().join("|");
 
-  filterSelect.innerHTML = `<option value="">Select Filter View</option>`;
+filterSelect.innerHTML = "";
+
 
   Object.entries(saved).forEach(([name, view]) => {
     const option = document.createElement("option");
