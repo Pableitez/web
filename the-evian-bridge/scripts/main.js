@@ -139,92 +139,235 @@ function showComparisonSetup() {
     return;
   }
 
-  const container = document.createElement("div");
-  container.className = "comparison-setup-modal";
-  Object.assign(container.style, {
-    position: "fixed", top: "50%", left: "50%",
-    transform: "translate(-50%, -50%)",
-    background: "white", padding: "1.5rem",
-    border: "1px solid #ccc", borderRadius: "8px",
-    zIndex: "9999", maxHeight: "80vh", overflowY: "auto",
-    boxShadow: "0 0 10px rgba(0,0,0,0.25)"
+  // Modal base
+  const modal = document.createElement("div");
+  modal.className = "modal";
+  modal.id = "comparisonPanel";
+
+  const content = document.createElement("div");
+  content.className = "modal-content";
+
+  // Título
+  const title = document.createElement("h3");
+  title.textContent = "Comparison Setup";
+  title.classList.add("modal-title");
+  content.appendChild(title);
+
+  // === Sección: CSV Files ===
+  const csvSection = document.createElement("div");
+  csvSection.className = "comparison-section";
+  const csvLabel = document.createElement("label");
+  csvLabel.innerHTML = "<strong>Select CSV Files to Compare</strong>";
+  const csvSelect = document.createElement("select");
+  csvSelect.id = "csvFilesSelect";
+  csvSelect.multiple = true;
+  csvSelect.size = 4;
+
+  loadedCSVs.forEach((csv, i) => {
+    const option = document.createElement("option");
+    option.value = i;
+    option.selected = true;
+    option.textContent = csv.name;
+    csvSelect.appendChild(option);
   });
 
-  const commonHeaders = getCommonHeaders(loadedCSVs);
+  csvSection.append(csvLabel, csvSelect);
+  content.appendChild(csvSection);
 
-  container.innerHTML = `
-    <h3>Comparison Setup</h3>
+  // === Sección: Key Columns ===
+  const keySection = document.createElement("div");
+  keySection.className = "comparison-section";
+  keySection.innerHTML = "<label><strong>Select Key Columns</strong></label>";
 
-    <label><strong>Select Key Columns</strong></label>
-    <div style="margin-bottom: 0.5rem;">
-      <button id="selectAllKeys" class="panel-action-btn btn-small">Select All</button>
-      <button id="unselectAllKeys" class="panel-action-btn btn-small">Unselect All</button>
-    </div>
-    <select id="keyFieldsSelect" multiple size="6" style="width: 100%; margin-bottom: 1rem;">
-      ${commonHeaders.map(h => `<option value="${h}">${h}</option>`).join("")}
-    </select>
+  const keyBtns = document.createElement("div");
+  keyBtns.className = "comparison-buttons";
+  const selectAllKeys = document.createElement("button");
+  selectAllKeys.id = "selectAllKeys";
+  selectAllKeys.textContent = "Select All";
+  selectAllKeys.className = "panel-action-btn btn-small";
+  const unselectAllKeys = document.createElement("button");
+  unselectAllKeys.id = "unselectAllKeys";
+  unselectAllKeys.textContent = "Unselect All";
+  unselectAllKeys.className = "panel-action-btn btn-small";
+  keyBtns.append(selectAllKeys, unselectAllKeys);
 
-    <label><strong>Select Fields to Compare</strong></label>
-    <div style="margin-bottom: 0.5rem;">
-      <button id="selectAllFields" class="panel-action-btn btn-small">Select All</button>
-      <button id="unselectAllFields" class="panel-action-btn btn-small">Unselect All</button>
-    </div>
-    <div id="fieldsCheckboxes">
-      ${commonHeaders.map(h => `
-        <label style="display:block; margin-left:1rem;">
-          <input type="checkbox" class="field-check" value="${h}" checked /> ${h}
-        </label>
-      `).join("")}
-    </div>
+  const keySelect = document.createElement("select");
+  keySelect.id = "keyFieldsSelect";
+  keySelect.multiple = true;
+  keySelect.size = 6;
 
-    <label style="display:block; margin-top:1rem;">
-      <input type="checkbox" id="onlyDiffs" checked />
-      Only show rows with differences
-    </label>
+  keySection.append(keyBtns, keySelect);
+  content.appendChild(keySection);
 
-    <div style="margin-top: 1rem;">
-      <button id="runComparisonBtn" class="panel-action-btn">Compare</button>
-      <button id="cancelComparisonBtn" class="panel-action-btn" style="background-color: #ccc; margin-left: 0.5rem;">Cancel</button>
-    </div>
-  `;
+  // === Sección: Fields to Compare ===
+  const fieldSection = document.createElement("div");
+  fieldSection.className = "comparison-section";
+  fieldSection.innerHTML = "<label><strong>Select Fields to Compare</strong></label>";
 
-  document.body.appendChild(container);
+  const fieldBtns = document.createElement("div");
+  fieldBtns.className = "comparison-buttons";
+  const selectAllFields = document.createElement("button");
+  selectAllFields.id = "selectAllFields";
+  selectAllFields.textContent = "Select All";
+  selectAllFields.className = "panel-action-btn btn-small";
+  const unselectAllFields = document.createElement("button");
+  unselectAllFields.id = "unselectAllFields";
+  unselectAllFields.textContent = "Unselect All";
+  unselectAllFields.className = "panel-action-btn btn-small";
+  fieldBtns.append(selectAllFields, unselectAllFields);
 
-  // 🔘 Select/Unselect Key Fields
-  document.getElementById("selectAllKeys").onclick = () => {
-    const options = document.getElementById("keyFieldsSelect").options;
-    for (let opt of options) opt.selected = true;
+  const fieldCheckboxes = document.createElement("div");
+  fieldCheckboxes.id = "fieldsCheckboxes";
+  fieldCheckboxes.className = "fields-grid";
+
+  fieldSection.append(fieldBtns, fieldCheckboxes);
+  content.appendChild(fieldSection);
+
+  // === Checkbox: Only differences ===
+  const diffSection = document.createElement("div");
+  diffSection.className = "comparison-section";
+  const diffLabel = document.createElement("label");
+  const diffCheckbox = document.createElement("input");
+  diffCheckbox.type = "checkbox";
+  diffCheckbox.id = "onlyDiffs";
+  diffCheckbox.checked = true;
+  diffLabel.append(diffCheckbox, " Only show differences");
+  diffSection.appendChild(diffLabel);
+  content.appendChild(diffSection);
+
+  // === Botones inferiores ===
+  const footerBtns = document.createElement("div");
+  footerBtns.className = "comparison-buttons comparison-footer";
+
+  const runBtn = document.createElement("button");
+  runBtn.id = "runComparisonBtn";
+  runBtn.className = "panel-action-btn";
+  runBtn.textContent = "Compare";
+
+  const cancelBtn = document.createElement("button");
+  cancelBtn.id = "cancelComparisonBtn";
+  cancelBtn.className = "panel-action-btn cancel-btn";
+  cancelBtn.textContent = "Cancel";
+
+  footerBtns.append(runBtn, cancelBtn);
+  content.appendChild(footerBtns);
+
+  // === Add to modal ===
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+
+  // === Populate dynamic content ===
+  const updateFieldSelectors = () => {
+    const selectedIndices = Array.from(csvSelect.selectedOptions).map(o => parseInt(o.value));
+    const selectedCSVs = selectedIndices.map(i => loadedCSVs[i]);
+    const commonHeaders = getCommonHeaders(selectedCSVs);
+
+    keySelect.innerHTML = "";
+    commonHeaders.forEach(h => {
+      const opt = document.createElement("option");
+      opt.value = h;
+      opt.textContent = h;
+      keySelect.appendChild(opt);
+    });
+
+    fieldCheckboxes.innerHTML = "";
+    commonHeaders.forEach(h => {
+      const label = document.createElement("label");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.className = "field-check";
+      cb.value = h;
+      cb.checked = true;
+      label.append(cb, ` ${h}`);
+      fieldCheckboxes.appendChild(label);
+    });
   };
-  document.getElementById("unselectAllKeys").onclick = () => {
-    const options = document.getElementById("keyFieldsSelect").options;
-    for (let opt of options) opt.selected = false;
+
+  updateFieldSelectors();
+  csvSelect.addEventListener("change", updateFieldSelectors);
+
+  // Botones de selección
+  selectAllKeys.onclick = () => {
+    Array.from(keySelect.options).forEach(opt => opt.selected = true);
+  };
+  unselectAllKeys.onclick = () => {
+    Array.from(keySelect.options).forEach(opt => opt.selected = false);
+  };
+  selectAllFields.onclick = () => {
+    fieldCheckboxes.querySelectorAll(".field-check").forEach(cb => cb.checked = true);
+  };
+  unselectAllFields.onclick = () => {
+    fieldCheckboxes.querySelectorAll(".field-check").forEach(cb => cb.checked = false);
   };
 
-  // 🔘 Select/Unselect Field Checkboxes
-  document.getElementById("selectAllFields").onclick = () => {
-    document.querySelectorAll(".field-check").forEach(cb => cb.checked = true);
-  };
-  document.getElementById("unselectAllFields").onclick = () => {
-    document.querySelectorAll(".field-check").forEach(cb => cb.checked = false);
-  };
+  runBtn.onclick = () => {
+    const selectedIndices = Array.from(csvSelect.selectedOptions).map(o => parseInt(o.value));
+    const selectedCSVs = selectedIndices.map(i => loadedCSVs[i]);
+    const selectedKeys = Array.from(keySelect.selectedOptions).map(o => o.value);
+    const selectedFields = Array.from(fieldCheckboxes.querySelectorAll(".field-check:checked")).map(cb => cb.value);
+    const onlyDiffs = diffCheckbox.checked;
 
-  // 🟢 Ejecutar comparación
-  document.getElementById("runComparisonBtn").onclick = () => {
-    const selectedKeys = Array.from(document.getElementById("keyFieldsSelect").selectedOptions).map(o => o.value);
-    const selectedFields = Array.from(document.querySelectorAll(".field-check:checked")).map(chk => chk.value);
-    const onlyDiffs = document.getElementById("onlyDiffs").checked;
+    if (selectedCSVs.length < 2) {
+      alert("Select at least 2 CSV files.");
+      return;
+    }
 
     if (selectedKeys.length === 0 || selectedFields.length === 0) {
       alert("Please select at least one key and one field.");
       return;
     }
 
-    container.remove();
-    runComparison({ keys: selectedKeys, fields: selectedFields, onlyDiffs });
+    modal.remove();
+    runComparisonMultiple(selectedCSVs, { keys: selectedKeys, fields: selectedFields, onlyDiffs });
   };
 
-  document.getElementById("cancelComparisonBtn").onclick = () => container.remove();
+  cancelBtn.onclick = () => modal.remove();
 }
+
+
+
+function runComparisonMultiple(csvList, { keys, fields, onlyDiffs }) {
+  const buildKey = row => keys.map(k => (row[k] || "").trim()).join("||");
+
+  const maps = csvList.map(csv => {
+    const map = {};
+    csv.data.forEach(row => {
+      const k = buildKey(row);
+      if (k) map[k] = row;
+    });
+    return map;
+  });
+
+  const allKeys = new Set();
+  maps.forEach(map => Object.keys(map).forEach(k => allKeys.add(k)));
+
+  const comparison = [];
+
+  allKeys.forEach(k => {
+    const rowResult = {};
+    rowResult["Key"] = k;
+
+    let isDifferent = false;
+
+    fields.forEach(field => {
+      const values = maps.map(m => (m[k]?.[field] || "—").trim());
+
+      const allEqual = values.every(v => v === values[0]);
+      if (!allEqual) isDifferent = true;
+
+      values.forEach((v, i) => {
+        rowResult[`${field}_File${i + 1}`] = v;
+      });
+    });
+
+    if (!onlyDiffs || isDifferent) {
+      comparison.push(rowResult);
+    }
+  });
+
+  showComparisonResult(comparison, keys.join(" + "));
+}
+
 
 // ⚙️ Comparación avanzada con múltiples claves
 function runComparison({ keys, fields, onlyDiffs }) {

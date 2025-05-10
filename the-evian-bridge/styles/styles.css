@@ -1233,3 +1233,175 @@
 .csv-dropdown-menu .dropdown-item:hover {
   background-color: #35506a;
 }
+/* 🧾 Panel de comparación de CSVs */
+#comparisonPanel {
+  background-color: #ffffff;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+/* Títulos */
+#comparisonPanel h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+#comparisonPanel select,
+#comparisonPanel input[type="checkbox"] {
+  font-size: 0.95rem;
+}
+
+/* Select general */
+#comparisonPanel select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* Secciones */
+.comparison-section {
+  margin-bottom: 2rem;
+}
+
+.comparison-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0.8rem;
+}
+
+.comparison-buttons button {
+  padding: 0.4rem 0.8rem;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.comparison-buttons button:hover {
+  background-color: #0052a3;
+}
+
+/* Cuadro de columnas clave */
+.key-columns-box {
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+/* Grid de campos de comparación */
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* 🧾 Modal de Comparación Mejorado */
+#comparisonPanel.modal {
+  background: rgba(0, 0, 0, 0.5); /* overlay oscuro */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#comparisonPanel .modal-content {
+  background-color: #ffffff;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#comparisonPanel h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #0a2337;
+  font-weight: bold;
+}
+
+#comparisonPanel .comparison-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#comparisonPanel select,
+#comparisonPanel .fields-grid {
+  width: 100%;
+}
+
+#comparisonPanel select {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+#comparisonPanel .comparison-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#comparisonPanel .comparison-buttons button {
+  padding: 0.4rem 0.8rem;
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+#comparisonPanel .comparison-buttons button:hover {
+  background-color: #14344d;
+}
+
+#comparisonPanel .fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+#comparisonPanel label {
+  font-size: 0.95rem;
+}
+
+#comparisonPanel input[type="checkbox"] {
+  transform: scale(1.1);
+  margin-right: 0.4rem;
+}
