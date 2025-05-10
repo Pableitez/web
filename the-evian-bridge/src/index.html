@@ -10,67 +10,75 @@
 </head>
 <body>
 
-  <!-- Toolbar superior con título incluido -->
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <div class="view-select-wrapper">
-        <select id="viewSelect" class="view-selector">
-          <option value="" disabled selected>Views</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="toolbar-title">
-      <h1>The Evian Bridge</h1>
-    </div>
-
-    <div class="toolbar-right">
-      <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
-      <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
-      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
-      <input type="file" id="csvFileInput" accept=".csv" hidden />
-    </div>
-  </div>
-
-  <!-- 🧭 Panel lateral izquierdo para filtros -->
-<!-- 🧭 Panel lateral izquierdo para filtros -->
-<div id="leftFilterPanel" class="left-panel hidden">
-  <div class="offcanvas-header">
-    <h3>Filters</h3>
-    <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
-  </div>
-
-  <!-- 🔄 Saved Filters desplegable como botón -->
-<div class="filter-wrapper" style="margin-bottom: 1.5rem;">
-  <div class="filter-collapsible">
-    <div class="filter-header" id="toggleSavedFilters">
-      <span>Saved Filters</span>
-      <span class="toggle-icon">▼</span>
-    </div>
-    <div class="filter-content visible" id="savedFiltersContainer">
-      <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
-        <!-- opciones -->
+<!-- Toolbar superior con título incluido -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="view-select-wrapper">
+      <select id="viewSelect" class="view-selector">
+        <option value="" disabled selected>Views</option>
       </select>
     </div>
   </div>
-</div>
 
+  <div class="toolbar-title">
+    <h1>The Evian Bridge</h1>
+  </div>
 
+  <div class="toolbar-right">
+    <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
+    <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
 
-  <!-- 🔧 Filtros dinámicos por campo -->
-  <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+    <!-- archivo único -->
+    <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+    <input type="file" id="csvFileInput" accept=".csv" hidden />
 
-  <!-- 🎛️ Controles -->
-  <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-    <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
-    <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
-    <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
-      Reset Filters
-    </button>
+    <!-- archivo múltiple -->
+    <label for="csvMultiInput" class="custom-file-upload">Compare CSV Files</label>
+    <input type="file" id="csvMultiInput" multiple accept=".csv" hidden />
+
+    <!-- Lista de archivos seleccionados -->
+    <div id="csvFileList" class="csv-file-list"></div>
+
+    <!-- Botón para configurar comparación -->
+    <button id="setupComparisonBtn" class="panel-action-btn">Setup Comparison</button>
   </div>
 </div>
 
 
+  <!-- 🧭 Panel lateral izquierdo para filtros -->
+  <div id="leftFilterPanel" class="left-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Filters</h3>
+      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
+    </div>
+
+    <!-- 🔄 Saved Filters desplegable como botón -->
+    <div class="filter-wrapper" style="margin-bottom: 1.5rem;">
+      <div class="filter-collapsible">
+        <div class="filter-header" id="toggleSavedFilters">
+          <span>Saved Filters</span>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="filter-content visible" id="savedFiltersContainer">
+          <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
+            <!-- opciones -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔧 Filtros dinámicos por campo -->
+    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+
+    <!-- 🎛️ Controles -->
+    <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+      <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+      <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
+        Reset Filters
+      </button>
+    </div>
+  </div>
 
   <!-- 🧱 Contenido principal -->
   <main class="main-content">

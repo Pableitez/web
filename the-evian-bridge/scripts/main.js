@@ -1,87 +1,295 @@
-// 📦 IndexedDB setup
-let db;
-const DB_NAME = 'embarquesDB';
-const STORE_NAME = 'csvVersions';
+      // 📦 IndexedDB setup
+      let db;
+      const DB_NAME = 'embarquesDB';
+      const STORE_NAME = 'csvVersions';
 
-function initDB() {
-  const request = indexedDB.open(DB_NAME, 1);
+      function initDB() {
 
-  request.onupgradeneeded = function (event) {
-    db = event.target.result;
-    if (!db.objectStoreNames.contains(STORE_NAME)) {
-      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-    }
-  };
+        const request = indexedDB.open(DB_NAME, 1);
 
-  request.onsuccess = function (event) {
-    db = event.target.result;
-    console.log('IndexedDB listo');
-  };
+        request.onupgradeneeded = function (event) {
+          db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
 
-  request.onerror = function (event) {
-    console.error('Error con IndexedDB:', event.target.errorCode);
-  };
-}
+        request.onsuccess = function (event) {
+          db = event.target.result;
+          console.log('IndexedDB listo');
+        };
 
-// 🚀 App initialization
-document.addEventListener("DOMContentLoaded", function () {
-  initDB();
-  let originalData = [];
-  let filteredData = [];
-  let currentPage = 1;
-  const filterValues = {};
-  let currentHeaders = [];
+        request.onerror = function (event) {
+          console.error('Error con IndexedDB:', event.target.errorCode);
+        };
+      }
 
-  document.getElementById("csvFileInput").addEventListener("change", function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
+      // 🚀 App initialization
+      document.addEventListener("DOMContentLoaded", function () {
+        initDB();
+        let originalData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const filterValues = {};
+        let currentHeaders = [];
+        const loadedCSVs = [];
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results) {
-        originalData = results.data;
-        filteredData = [...originalData];
-        currentHeaders = Object.keys(originalData[0]);
-        generateFilterSidebar(currentHeaders); 
-        generateColumnVisibilityControls(currentHeaders);
-        applyFilters();
-        populateSavedViews();
-        populateFilterViews();
+        document.getElementById("csvFileInput").addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          if (!file) return;
 
-        const toggleHeader = document.getElementById("toggleSavedFilters");
-if (toggleHeader) {
-  toggleHeader.addEventListener("click", () => {
-    const container = document.getElementById("savedFiltersContainer");
-    const icon = toggleHeader.querySelector(".toggle-icon");
-    container.classList.toggle("visible");
-    icon.textContent = container.classList.contains("visible") ? "▲" : "▼";
-  });
-}
+          Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+              originalData = results.data;
+              filteredData = [...originalData];
+              currentHeaders = Object.keys(originalData[0]);
+              generateFilterSidebar(currentHeaders); 
+              generateColumnVisibilityControls(currentHeaders);
+              applyFilters();
+              populateSavedViews();
+              populateFilterViews();
 
-        
-        const globalInput = document.getElementById("globalSearchInput");
-        if (globalInput) {
-          globalInput.addEventListener("input", () => {
-            applyFilters();
-          });
-        }
-
-        document.addEventListener("input", (e) => {
-          const input = e.target;
-          if (!input.closest(".filter-block")) return;
-        
-          const block = input.closest(".filter-block");
-          const inputs = block.querySelectorAll("input[type='text'], input[type='date']");
-          const hasValue = Array.from(inputs).some(i => i.value.trim() !== "");
-        
-          block.classList.toggle("active", hasValue);
+              const toggleHeader = document.getElementById("toggleSavedFilters");
+      if (toggleHeader) {
+        toggleHeader.addEventListener("click", () => {
+          const container = document.getElementById("savedFiltersContainer");
+          const icon = toggleHeader.querySelector(".toggle-icon");
+          container.classList.toggle("visible");
+          icon.textContent = container.classList.contains("visible") ? "▲" : "▼";
         });
-      },
-    });
+      }
+
+
+
+              
+              const globalInput = document.getElementById("globalSearchInput");
+              if (globalInput) {
+                globalInput.addEventListener("input", () => {
+                  applyFilters();
+                });
+              }
+
+              document.addEventListener("input", (e) => {
+                const input = e.target;
+                if (!input.closest(".filter-block")) return;
+              
+                const block = input.closest(".filter-block");
+                const inputs = block.querySelectorAll("input[type='text'], input[type='date']");
+                const hasValue = Array.from(inputs).some(i => i.value.trim() !== "");
+              
+                block.classList.toggle("active", hasValue);
+              });
+            },
+          });
+
+      // 🔁 Manejador para múltiples CSV
+      document.getElementById("csvMultiInput").addEventListener("change", function (e) {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+
+        loadedCSVs.length = 0;
+
+        let filesProcessed = 0;
+
+        files.forEach(file => {
+          Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            complete: function (results) {
+              loadedCSVs.push({
+                name: file.name,
+                data: results.data,
+                headers: Object.keys(results.data[0] || {})
+              });
+
+              filesProcessed++;
+              if (filesProcessed === files.length) {
+                console.log("📂 Archivos cargados:", loadedCSVs);
+                alert(`✅ Se cargaron ${files.length} archivo(s). Listos para comparar.`);
+                  const listContainer = document.getElementById("csvFileList");
+                  listContainer.innerHTML = files.map(f => `• ${f.name}`).join("<br>");
+
+              }
+            }
+          });
+        });
+      });
+
+      // ✅ AÑADIMOS ESTE EVENTO para que el botón funcione correctamente
+      const setupBtn = document.getElementById("setupComparisonBtn");
+      if (setupBtn) {
+        setupBtn.addEventListener("click", function () {
+          showComparisonSetup();
+        });
+      }
   });
 
-// ------------ Panel dinámico de filtros -------------- //
+
+// ✅ Función auxiliar para obtener columnas comunes
+function getCommonHeaders(csvList) {
+  if (csvList.length === 0) return [];
+  return csvList.map(c => c.headers).reduce((a, b) => a.filter(x => b.includes(x)));
+}
+
+// ✅ Mostrar panel de configuración de comparación
+function showComparisonSetup() {
+  if (loadedCSVs.length < 2) {
+    alert("Load at least 2 CSV files to compare.");
+    return;
+  }
+
+  const container = document.createElement("div");
+  container.className = "comparison-setup-modal";
+  container.style.position = "fixed";
+  container.style.top = "50%";
+  container.style.left = "50%";
+  container.style.transform = "translate(-50%, -50%)";
+  container.style.background = "white";
+  container.style.border = "1px solid #ccc";
+  container.style.borderRadius = "8px";
+  container.style.padding = "1.5rem";
+  container.style.zIndex = "9999";
+  container.style.maxHeight = "80vh";
+  container.style.overflowY = "auto";
+  container.style.boxShadow = "0 0 10px rgba(0,0,0,0.25)";
+
+  const commonHeaders = getCommonHeaders(loadedCSVs);
+
+  container.innerHTML = `
+    <h3>Select fields to compare</h3>
+    <form id="comparisonForm" style="margin: 1rem 0;">
+      ${commonHeaders.map(header => `
+        <label style="display: block; margin-bottom: 0.5rem;">
+          <input type="checkbox" class="field-check" value="${header}" />
+          ${header}
+        </label>
+      `).join("")}
+    </form>
+
+    <div style="margin-top: 1rem;">
+      <button id="runComparisonBtn" class="panel-action-btn">Compare</button>
+      <button id="cancelComparisonBtn" class="panel-action-btn" style="background-color: #ccc; margin-left: 0.5rem;">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(container);
+
+  document.getElementById("runComparisonBtn").onclick = () => {
+    const selections = Array.from(container.querySelectorAll(".field-check"))
+      .filter(chk => chk.checked)
+      .map(chk => chk.value);
+
+    if (selections.length === 0) {
+      alert("Please select at least one column.");
+      return;
+    }
+
+    container.remove();
+    runComparison(selections);
+  };
+
+  document.getElementById("cancelComparisonBtn").onclick = () => {
+    container.remove();
+  };
+}
+
+// ✅ Ejecutar la comparación
+function runComparison(fields) {
+  if (!fields || fields.length === 0) {
+    alert("No fields selected.");
+    return;
+  }
+
+  if (loadedCSVs.length < 2) {
+    alert("At least 2 CSVs are required.");
+    return;
+  }
+
+  const key = fields[0]; // Campo clave para agrupación
+  const maps = loadedCSVs.map(csv => {
+    const map = {};
+    csv.data.forEach(row => {
+      const val = (row[key] || "").trim();
+      if (val) map[val] = row;
+    });
+    return map;
+  });
+
+  const allKeys = new Set();
+  maps.forEach(map => Object.keys(map).forEach(k => allKeys.add(k)));
+
+  const comparison = [];
+  allKeys.forEach(k => {
+    const row = { [key]: k };
+    fields.forEach(field => {
+      loadedCSVs.forEach((csv, idx) => {
+        const value = maps[idx][k]?.[field] || "—";
+        row[`${field}_File${idx + 1}`] = value;
+      });
+    });
+    comparison.push(row);
+  });
+
+  showComparisonResult(comparison, key);
+}
+
+// ✅ Mostrar la tabla de resultados
+function showComparisonResult(data, key) {
+  const container = document.getElementById("tableContainer");
+  container.innerHTML = "";
+
+  if (!data.length) {
+    container.innerHTML = "<p>No comparison results to show.</p>";
+    return;
+  }
+
+  const table = document.createElement("table");
+  table.className = "data-table";
+
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+
+  const headers = Object.keys(data[0]);
+  headers.forEach(h => {
+    const th = document.createElement("th");
+    th.textContent = h;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  data.forEach(row => {
+    const tr = document.createElement("tr");
+    headers.forEach(h => {
+      const td = document.createElement("td");
+      td.textContent = row[h];
+      td.style.textAlign = "center";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  container.appendChild(table);
+
+  const exitBtn = document.createElement("button");
+  exitBtn.textContent = "Exit Comparison";
+  exitBtn.className = "panel-action-btn";
+  exitBtn.style.marginTop = "1rem";
+  exitBtn.onclick = () => {
+    applyFilters(); // Vuelve a mostrar el CSV base
+  };
+  container.appendChild(exitBtn);
+
+  const summary = document.createElement("p");
+  summary.textContent = `Compared by "${key}". Total keys: ${data.length}.`;
+  container.prepend(summary);
+}
+
+
 function generateFilterSidebar(headers) {
   const container = document.getElementById("filterInputsContainer");
   container.innerHTML = "";
