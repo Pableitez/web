@@ -1,5 +1,6 @@
       // 📦 IndexedDB setup
       let db;
+      let loadedCSVs = [];
       const DB_NAME = 'embarquesDB';
       const STORE_NAME = 'csvVersions';
 
@@ -32,7 +33,7 @@
         let currentPage = 1;
         const filterValues = {};
         let currentHeaders = [];
-        const loadedCSVs = [];
+       
 
         document.getElementById("csvFileInput").addEventListener("change", function (e) {
           const file = e.target.files[0];
@@ -108,8 +109,7 @@
               if (filesProcessed === files.length) {
                 console.log("📂 Archivos cargados:", loadedCSVs);
                 alert(`✅ Se cargaron ${files.length} archivo(s). Listos para comparar.`);
-                  const listContainer = document.getElementById("csvFileList");
-                  listContainer.innerHTML = files.map(f => `• ${f.name}`).join("<br>");
+
 
               }
             }
@@ -126,14 +126,13 @@
       }
   });
 
-
-// ✅ Función auxiliar para obtener columnas comunes
+// 🔁 Encuentra columnas comunes entre los CSVs
 function getCommonHeaders(csvList) {
   if (csvList.length === 0) return [];
   return csvList.map(c => c.headers).reduce((a, b) => a.filter(x => b.includes(x)));
 }
 
-// ✅ Mostrar panel de configuración de comparación
+// 🎛️ Panel de configuración para comparación avanzada
 function showComparisonSetup() {
   if (loadedCSVs.length < 2) {
     alert("Load at least 2 CSV files to compare.");
@@ -142,31 +141,46 @@ function showComparisonSetup() {
 
   const container = document.createElement("div");
   container.className = "comparison-setup-modal";
-  container.style.position = "fixed";
-  container.style.top = "50%";
-  container.style.left = "50%";
-  container.style.transform = "translate(-50%, -50%)";
-  container.style.background = "white";
-  container.style.border = "1px solid #ccc";
-  container.style.borderRadius = "8px";
-  container.style.padding = "1.5rem";
-  container.style.zIndex = "9999";
-  container.style.maxHeight = "80vh";
-  container.style.overflowY = "auto";
-  container.style.boxShadow = "0 0 10px rgba(0,0,0,0.25)";
+  Object.assign(container.style, {
+    position: "fixed", top: "50%", left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "white", padding: "1.5rem",
+    border: "1px solid #ccc", borderRadius: "8px",
+    zIndex: "9999", maxHeight: "80vh", overflowY: "auto",
+    boxShadow: "0 0 10px rgba(0,0,0,0.25)"
+  });
 
   const commonHeaders = getCommonHeaders(loadedCSVs);
 
   container.innerHTML = `
-    <h3>Select fields to compare</h3>
-    <form id="comparisonForm" style="margin: 1rem 0;">
-      ${commonHeaders.map(header => `
-        <label style="display: block; margin-bottom: 0.5rem;">
-          <input type="checkbox" class="field-check" value="${header}" />
-          ${header}
+    <h3>Comparison Setup</h3>
+
+    <label><strong>Select Key Columns</strong></label>
+    <div style="margin-bottom: 0.5rem;">
+      <button id="selectAllKeys" class="panel-action-btn btn-small">Select All</button>
+      <button id="unselectAllKeys" class="panel-action-btn btn-small">Unselect All</button>
+    </div>
+    <select id="keyFieldsSelect" multiple size="6" style="width: 100%; margin-bottom: 1rem;">
+      ${commonHeaders.map(h => `<option value="${h}">${h}</option>`).join("")}
+    </select>
+
+    <label><strong>Select Fields to Compare</strong></label>
+    <div style="margin-bottom: 0.5rem;">
+      <button id="selectAllFields" class="panel-action-btn btn-small">Select All</button>
+      <button id="unselectAllFields" class="panel-action-btn btn-small">Unselect All</button>
+    </div>
+    <div id="fieldsCheckboxes">
+      ${commonHeaders.map(h => `
+        <label style="display:block; margin-left:1rem;">
+          <input type="checkbox" class="field-check" value="${h}" checked /> ${h}
         </label>
       `).join("")}
-    </form>
+    </div>
+
+    <label style="display:block; margin-top:1rem;">
+      <input type="checkbox" id="onlyDiffs" checked />
+      Only show rows with differences
+    </label>
 
     <div style="margin-top: 1rem;">
       <button id="runComparisonBtn" class="panel-action-btn">Compare</button>
@@ -176,43 +190,57 @@ function showComparisonSetup() {
 
   document.body.appendChild(container);
 
-  document.getElementById("runComparisonBtn").onclick = () => {
-    const selections = Array.from(container.querySelectorAll(".field-check"))
-      .filter(chk => chk.checked)
-      .map(chk => chk.value);
+  // 🔘 Select/Unselect Key Fields
+  document.getElementById("selectAllKeys").onclick = () => {
+    const options = document.getElementById("keyFieldsSelect").options;
+    for (let opt of options) opt.selected = true;
+  };
+  document.getElementById("unselectAllKeys").onclick = () => {
+    const options = document.getElementById("keyFieldsSelect").options;
+    for (let opt of options) opt.selected = false;
+  };
 
-    if (selections.length === 0) {
-      alert("Please select at least one column.");
+  // 🔘 Select/Unselect Field Checkboxes
+  document.getElementById("selectAllFields").onclick = () => {
+    document.querySelectorAll(".field-check").forEach(cb => cb.checked = true);
+  };
+  document.getElementById("unselectAllFields").onclick = () => {
+    document.querySelectorAll(".field-check").forEach(cb => cb.checked = false);
+  };
+
+  // 🟢 Ejecutar comparación
+  document.getElementById("runComparisonBtn").onclick = () => {
+    const selectedKeys = Array.from(document.getElementById("keyFieldsSelect").selectedOptions).map(o => o.value);
+    const selectedFields = Array.from(document.querySelectorAll(".field-check:checked")).map(chk => chk.value);
+    const onlyDiffs = document.getElementById("onlyDiffs").checked;
+
+    if (selectedKeys.length === 0 || selectedFields.length === 0) {
+      alert("Please select at least one key and one field.");
       return;
     }
 
     container.remove();
-    runComparison(selections);
+    runComparison({ keys: selectedKeys, fields: selectedFields, onlyDiffs });
   };
 
-  document.getElementById("cancelComparisonBtn").onclick = () => {
-    container.remove();
-  };
+  document.getElementById("cancelComparisonBtn").onclick = () => container.remove();
 }
 
-// ✅ Ejecutar la comparación
-function runComparison(fields) {
-  if (!fields || fields.length === 0) {
-    alert("No fields selected.");
-    return;
-  }
-
+// ⚙️ Comparación avanzada con múltiples claves
+function runComparison({ keys, fields, onlyDiffs }) {
   if (loadedCSVs.length < 2) {
-    alert("At least 2 CSVs are required.");
+    alert("Need at least 2 CSVs.");
     return;
   }
 
-  const key = fields[0]; // Campo clave para agrupación
+  // Construir clave única compuesta
+  const buildKey = row => keys.map(k => (row[k] || "").trim()).join("||");
+
   const maps = loadedCSVs.map(csv => {
     const map = {};
     csv.data.forEach(row => {
-      const val = (row[key] || "").trim();
-      if (val) map[val] = row;
+      const k = buildKey(row);
+      if (k) map[k] = row;
     });
     return map;
   });
@@ -221,22 +249,34 @@ function runComparison(fields) {
   maps.forEach(map => Object.keys(map).forEach(k => allKeys.add(k)));
 
   const comparison = [];
+
   allKeys.forEach(k => {
-    const row = { [key]: k };
+    const rowResult = {};
+    rowResult["Key"] = k;
+
+    let isDifferent = false;
+
     fields.forEach(field => {
-      loadedCSVs.forEach((csv, idx) => {
-        const value = maps[idx][k]?.[field] || "—";
-        row[`${field}_File${idx + 1}`] = value;
+      const values = maps.map(m => (m[k]?.[field] || "—").trim());
+
+      const allEqual = values.every(v => v === values[0]);
+      if (!allEqual) isDifferent = true;
+
+      values.forEach((v, i) => {
+        rowResult[`${field}_File${i + 1}`] = v;
       });
     });
-    comparison.push(row);
+
+    if (!onlyDiffs || isDifferent) {
+      comparison.push(rowResult);
+    }
   });
 
-  showComparisonResult(comparison, key);
+  showComparisonResult(comparison, keys.join(" + "));
 }
 
-// ✅ Mostrar la tabla de resultados
-function showComparisonResult(data, key) {
+// 📊 Mostrar resultados
+function showComparisonResult(data, keyDescription) {
   const container = document.getElementById("tableContainer");
   container.innerHTML = "";
 
@@ -275,20 +315,19 @@ function showComparisonResult(data, key) {
   table.appendChild(tbody);
   container.appendChild(table);
 
+  const summary = document.createElement("p");
+  summary.textContent = `Compared by "${keyDescription}". Total entries: ${data.length}.`;
+  container.prepend(summary);
+
   const exitBtn = document.createElement("button");
   exitBtn.textContent = "Exit Comparison";
   exitBtn.className = "panel-action-btn";
   exitBtn.style.marginTop = "1rem";
   exitBtn.onclick = () => {
-    applyFilters(); // Vuelve a mostrar el CSV base
+    applyFilters(); // vuelve a vista normal
   };
   container.appendChild(exitBtn);
-
-  const summary = document.createElement("p");
-  summary.textContent = `Compared by "${key}". Total keys: ${data.length}.`;
-  container.prepend(summary);
 }
-
 
 function generateFilterSidebar(headers) {
   const container = document.getElementById("filterInputsContainer");
@@ -1156,3 +1195,125 @@ document.getElementById("overlay").addEventListener("click", () => {
 });
 });
 
+// Agrupa los botones CSV dentro de un menú desplegable
+function groupCSVOptions() {
+  const toolbarRight = document.querySelector(".toolbar-right");
+
+  // Crear contenedor y botón principal
+  const wrapper = document.createElement("div");
+  wrapper.className = "csv-options-wrapper";
+
+  const toggleBtn = document.createElement("button");
+  toggleBtn.className = "csv-dropdown-toggle";
+  toggleBtn.textContent = "CSV Options ▼";
+
+  const menu = document.createElement("div");
+  menu.className = "csv-dropdown-menu";
+
+  // Reubicar los botones originales
+  const fileLabel = document.querySelector("label[for='csvFileInput']");
+  const fileInput = document.getElementById("csvFileInput");
+  const multiLabel = document.querySelector("label[for='csvMultiInput']");
+  const multiInput = document.getElementById("csvMultiInput");
+  const setupBtn = document.getElementById("setupComparisonBtn");
+
+  // Añadir al menú (preservando funcionalidad)
+  if (fileLabel && fileInput) menu.appendChild(fileLabel);
+  if (multiLabel && multiInput) menu.appendChild(multiLabel);
+  if (setupBtn) menu.appendChild(setupBtn);
+
+  wrapper.appendChild(toggleBtn);
+  wrapper.appendChild(menu);
+  toolbarRight.insertBefore(wrapper, document.getElementById("csvFileList"));
+
+  // Mostrar/Ocultar menú al hacer click
+  toggleBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  });
+
+  // Cerrar menú si se hace click fuera
+  document.addEventListener("click", () => {
+    menu.style.display = "none";
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupManageLoadedCSVsModal();
+
+  // Esperamos a que el menú exista tras renderizar
+  const observer = new MutationObserver(() => {
+    const menu = document.querySelector(".csv-dropdown-menu");
+    if (menu && !document.getElementById("manageLoadedCSVsBtn")) {
+      createManageCSVsButton();
+      observer.disconnect(); // Ya no necesitamos observar
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  groupCSVOptions(); // esto generará .csv-dropdown-menu
+});
+
+function setupManageLoadedCSVsModal() {
+  if (document.getElementById("manageLoadedCSVsModal")) return;
+
+  const modal = document.createElement("div");
+  modal.id = "manageLoadedCSVsModal";
+  modal.className = "modal hidden";
+
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>Loaded CSV Files</h2>
+      <ul id="loadedCSVsList" class="manage-views-list"></ul>
+      <button id="closeManageCSVs" class="modal-close-btn">Close</button>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector("#closeManageCSVs").addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+}
+
+function createManageCSVsButton() {
+  const dropdownMenu = document.querySelector(".csv-dropdown-menu");
+  if (!dropdownMenu) return;
+
+  const btn = document.createElement("button");
+  btn.textContent = "Manage Loaded CSVs";
+  btn.id = "manageLoadedCSVsBtn";
+  btn.className = "dropdown-item";
+
+  btn.onclick = () => {
+    const modal = document.getElementById("manageLoadedCSVsModal");
+    const list = document.getElementById("loadedCSVsList");
+    list.innerHTML = "";
+
+if (!Array.isArray(loadedCSVs) || loadedCSVs.length === 0) {
+
+      const li = document.createElement("li");
+      li.textContent = "No CSV files loaded.";
+      list.appendChild(li);
+    } else {
+      loadedCSVs.forEach((csv, index) => {
+        const item = document.createElement("li");
+        item.className = "view-item";
+        item.innerHTML = `
+          ${csv.name}
+          <button class="delete-btn" title="Remove CSV">✖</button>
+        `;
+        item.querySelector(".delete-btn").onclick = () => {
+          loadedCSVs.splice(index, 1);
+          item.remove();
+        };
+        list.appendChild(item);
+      });
+    }
+
+    modal.classList.remove("hidden");
+  };
+
+  dropdownMenu.appendChild(btn);
+}
