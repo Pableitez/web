@@ -549,30 +549,57 @@ if (recordCountEl) {
     pagination.appendChild(nextBtn);
   }
 
-  function generateColumnVisibilityControls(headers) {
-    const container = document.getElementById("columnVisibility");
-    container.innerHTML = "";
+function generateColumnVisibilityControls(headers) {
+  const container = document.getElementById("columnVisibility");
+  container.innerHTML = "";
 
-    headers.forEach((header, index) => {
-      const label = document.createElement("label");
-      label.style.display = "block";
-      label.style.marginBottom = "0.5rem";
+  // Botón Select/Deselect All
+  const toggleAllBtn = document.createElement("button");
+  toggleAllBtn.textContent = "Select All";
+  toggleAllBtn.className = "panel-action-btn";
+  toggleAllBtn.style.marginBottom = "1rem";
 
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = true;
-      checkbox.dataset.col = index;
+  let allSelected = true;
 
-      checkbox.addEventListener("change", (e) => {
-        const colIndex = parseInt(e.target.dataset.col);
-        toggleColumnVisibility(colIndex, e.target.checked);
-      });
+  toggleAllBtn.addEventListener("click", () => {
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+    allSelected = !allSelected;
 
-      label.appendChild(checkbox);
-      label.append(" " + header);
-      container.appendChild(label);
+    checkboxes.forEach((cb) => {
+      cb.checked = allSelected;
+      const colIndex = parseInt(cb.dataset.col);
+      toggleColumnVisibility(colIndex, allSelected);
     });
-  }
+
+    toggleAllBtn.textContent = allSelected ? "Deselect All" : "Select All";
+  });
+
+  container.appendChild(toggleAllBtn);
+
+  headers.forEach((header, index) => {
+    const label = document.createElement("label");
+    label.className = "column-toggle";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = true;
+    checkbox.dataset.col = index;
+
+    checkbox.addEventListener("change", (e) => {
+      const colIndex = parseInt(e.target.dataset.col);
+      toggleColumnVisibility(colIndex, e.target.checked);
+    });
+
+    const span = document.createElement("span");
+    span.textContent = header;
+
+    label.appendChild(checkbox);
+    label.appendChild(span);
+    container.appendChild(label);
+  });
+}
+
+
 
   function toggleColumnVisibility(colIndex, visible) {
     const cells = document.querySelectorAll(`.col-${colIndex}`);
@@ -620,38 +647,64 @@ if (recordCountEl) {
   });
   
 
-  document.getElementById("saveViewBtn").addEventListener("click", () => {
-    const name = prompt("Enter a name for this view:");
-    if (!name) return;
+document.getElementById("saveViewBtn").addEventListener("click", () => {
+  const name = prompt("Enter a name for this view:");
+  if (!name) return;
 
-    const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
-    const selectedColumns = Array.from(checkboxes).map(cb => cb.checked);
+  const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
+  const selectedColumns = Array.from(checkboxes).map(cb => cb.checked);
 
-    const savedViews = JSON.parse(localStorage.getItem("columnViews") || "{}");
-    savedViews[name] = selectedColumns;
-    localStorage.setItem("columnViews", JSON.stringify(savedViews));
-    populateSavedViews();
-  });
+  const signature = currentHeaders.slice().sort().join("|"); // "firma" del CSV actual
 
-  document.getElementById("viewSelect").addEventListener("change", () => {
-    const name = document.getElementById("viewSelect").value;
-    const views = JSON.parse(localStorage.getItem("columnViews") || "{}");
-    const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
-  
-    if (name === "All") {
-      // Mostrar todas las columnas
-      checkboxes.forEach((cb, index) => {
-        cb.checked = true;
-        toggleColumnVisibility(index, true);
-      });
-    } else if (views[name]) {
-      // Mostrar sólo las seleccionadas en la vista guardada
-      views[name].forEach((val, index) => {
-        checkboxes[index].checked = val;
-        toggleColumnVisibility(index, val);
-      });
+  const savedViews = JSON.parse(localStorage.getItem("columnViews") || "{}");
+  savedViews[name] = {
+    columns: selectedColumns,
+    signature
+  };
+  localStorage.setItem("columnViews", JSON.stringify(savedViews));
+  populateSavedViews();
+});
+
+
+document.getElementById("viewSelect").addEventListener("change", () => {
+  const select = document.getElementById("viewSelect");
+  const name = select.value;
+  const saved = JSON.parse(localStorage.getItem("columnViews") || "{}");
+  const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
+
+  if (!name) return; // Si no se seleccionó nada, salimos
+
+  if (name === "All") {
+    checkboxes.forEach((cb, index) => {
+      cb.checked = true;
+      toggleColumnVisibility(index, true);
+    });
+    document.getElementById("activeViewDisplay").textContent = "View: All";
+  } else {
+    const view = saved[name];
+    if (!view) return;
+
+    const currentSignature = currentHeaders.slice().sort().join("|");
+
+    if (view.signature && view.signature !== currentSignature) {
+      alert("This view does not match the current CSV structure.");
+      document.getElementById("activeViewDisplay").textContent = "View: All";
+      return;
     }
-  });
+
+    view.columns.forEach((val, index) => {
+      checkboxes[index].checked = val;
+      toggleColumnVisibility(index, val);
+    });
+
+    document.getElementById("activeViewDisplay").textContent = `View: ${name}`;
+  }
+
+  // ❌ Esta línea provocaba el bug visual
+  // select.value = ""; 
+});
+
+
   
 
  // =================== GESTIÓN DE VISTAS DE COLUMNAS ===================
@@ -719,12 +772,19 @@ document.getElementById("saveFilterViewBtn").addEventListener("click", () => {
   const name = prompt("Enter a name for this filter view:");
   if (!name) return;
 
+  const signature = currentHeaders.slice().sort().join("|"); // mismo método que para columnas
   const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
-  saved[name] = { ...filterValues };
+
+  saved[name] = {
+    values: { ...filterValues },
+    signature
+  };
+
   localStorage.setItem("savedFilters", JSON.stringify(saved));
   populateFilterViews();
   alert("Filter view saved.");
 });
+
 
 // =================== CARGAR VISTA DE FILTROS ===================
 document.getElementById("filterViewSelect").addEventListener("change", (e) => {
@@ -732,22 +792,43 @@ document.getElementById("filterViewSelect").addEventListener("change", (e) => {
   if (!name) return;
 
   const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
-  if (!saved[name]) return;
+  const view = saved[name];
+  if (!view) return;
 
-  Object.assign(filterValues, saved[name]);
+  const currentSignature = currentHeaders.slice().sort().join("|");
+
+  if (view.signature !== currentSignature) {
+    alert("This filter view does not match the current CSV structure.");
+    e.target.value = ""; // reset selector
+    return;
+  }
+
+  Object.assign(filterValues, view.values);
   applyFilters();
 });
+
 
 // =================== POBLAR SELECT DE FILTROS ===================
 function populateFilterViews() {
   const filterSelect = document.getElementById("filterViewSelect");
   const saved = JSON.parse(localStorage.getItem("savedFilters") || "{}");
+  const currentSignature = currentHeaders.slice().sort().join("|");
 
   filterSelect.innerHTML = `<option value="">Select Filter View</option>`;
-  Object.keys(saved).forEach(name => {
+
+  Object.entries(saved).forEach(([name, view]) => {
     const option = document.createElement("option");
     option.value = name;
     option.textContent = name;
+
+    if (view.signature !== currentSignature) {
+      option.disabled = true;
+      option.title = "This filter view does not match the current CSV structure";
+      option.classList.add("incompatible-view");
+    } else {
+      option.title = "Compatible with the current CSV structure";
+    }
+
     filterSelect.appendChild(option);
   });
 }
@@ -764,23 +845,30 @@ function populateSavedViews() {
   allOption.textContent = "All";
   select.appendChild(allOption);
 
-  Object.keys(views).forEach(name => {
+  const currentSignature = currentHeaders.slice().sort().join("|");
+
+  Object.entries(views).forEach(([name, view]) => {
     const option = document.createElement("option");
     option.value = name;
     option.textContent = name;
+
+    const isCompatible = view.signature === currentSignature;
+
+    if (!isCompatible) {
+      option.disabled = true;
+      option.title = "This view does not match the current CSV structure";
+      option.classList.add("incompatible-view");
+    } else {
+      option.title = "Compatible with the current CSV structure";
+    }
+
     select.appendChild(option);
   });
 
   select.value = "All";
-
-  if (views["All"]) {
-    const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
-    views["All"].forEach((val, index) => {
-      checkboxes[index].checked = val;
-      toggleColumnVisibility(index, val);
-    });
-  }
 }
+
+
 
 document.getElementById("resetFiltersBtn").addEventListener("click", () => {
   // Limpiar filtros activos

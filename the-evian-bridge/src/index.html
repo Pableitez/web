@@ -13,8 +13,11 @@
   <!-- Toolbar superior con título incluido -->
   <div class="toolbar">
     <div class="toolbar-left">
-      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
-      <input type="file" id="csvFileInput" accept=".csv" hidden />
+      <div class="view-select-wrapper">
+        <select id="viewSelect" class="view-selector">
+          <option value="" disabled selected>Views</option>
+        </select>
+      </div>
     </div>
 
     <div class="toolbar-title">
@@ -24,9 +27,8 @@
     <div class="toolbar-right">
       <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
       <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
-      <select id="viewSelect" class="toolbar-button">
-        <option value="">Select view</option>
-      </select>
+      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+      <input type="file" id="csvFileInput" accept=".csv" hidden />
     </div>
   </div>
 
@@ -37,7 +39,6 @@
       <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
     </div>
 
-    <!-- Selector de vistas de filtro (parte superior) -->
     <div class="views-controls" style="margin-bottom: 1rem;">
       <select id="filterViewSelect" class="toolbar-button">
         <option value="">Select Filter View</option>
@@ -46,7 +47,6 @@
 
     <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
 
-    <!-- Botones de guardado/gestión (parte inferior alineada) -->
     <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
       <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
       <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
