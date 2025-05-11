@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- Toolbar superior con título incluido -->
+<!-- Toolbar superior -->
 <div class="toolbar">
   <div class="toolbar-left">
     <div class="view-select-wrapper">
@@ -44,108 +44,108 @@
   </div>
 </div>
 
+<!-- Panel lateral izquierdo -->
+<div id="leftFilterPanel" class="left-panel hidden">
+  <div class="offcanvas-header">
+    <h3>Filters</h3>
+    <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
+  </div>
 
-  <!-- 🧭 Panel lateral izquierdo para filtros -->
-  <div id="leftFilterPanel" class="left-panel hidden">
-    <div class="offcanvas-header">
-      <h3>Filters</h3>
-      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
-    </div>
-
-    <!-- 🔄 Saved Filters desplegable como botón -->
-    <div class="filter-wrapper" style="margin-bottom: 1.5rem;">
-      <div class="filter-collapsible">
-        <div class="filter-header" id="toggleSavedFilters">
-          <span>Saved Filters</span>
-          <span class="toggle-icon">▼</span>
-        </div>
-        <div class="filter-content visible" id="savedFiltersContainer">
-          <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
-            <!-- opciones -->
-          </select>
-        </div>
+  <!-- Saved Filters -->
+  <div class="filter-wrapper" style="margin-bottom: 1.5rem;">
+    <div class="filter-collapsible">
+      <div class="filter-header" id="toggleSavedFilters">
+        <span>Saved Filters</span>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="filter-content visible" id="savedFiltersContainer">
+        <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
+          <!-- opciones -->
+        </select>
       </div>
     </div>
-
-    <!-- 🔧 Filtros dinámicos por campo -->
-    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
-
-    <!-- 🎛️ Controles -->
-    <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
-      <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
-      <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
-      <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
-        Reset Filters
-      </button>
-    </div>
   </div>
 
-  <!-- 🧱 Contenido principal -->
-  <main class="main-content">
-    <div class="table-toolbar">
-      <div style="flex: 1;"></div>
-      <input type="text" id="globalSearchInput" placeholder="Search..." class="search-input" />
-    </div>
+  <!-- Filtros dinámicos -->
+  <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
 
-    <div class="table-container" id="tableContainer"></div>
+  <!-- Controles -->
+  <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+    <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+    <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+    <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
+      Reset Filters
+    </button>
+  </div>
+</div>
 
-    <section class="table-controls">
-      <label for="rowsPerPageSelect">Rows per page:
-        <select id="rowsPerPageSelect">
-          <option value="20">20</option>
-          <option value="50" selected>50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="-1">All</option>
-        </select>
-      </label>
-      <div id="pagination" class="pagination"></div>
-      <span id="activeFilterName"></span>
-      <span id="recordCount"></span>
-    </section>
-  </main>
-
-  <!-- 🧾 Off-canvas panel para columnas -->
-  <div id="overlay" class="overlay hidden"></div>
-  <div id="columnsPanel" class="offcanvas-panel hidden">
-    <div class="offcanvas-header">
-      <h3>Select columns</h3>
-      <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">x</button>
-    </div>
-    <div id="columnVisibility" class="offcanvas-body"></div>
-
-    <div class="views-controls">
-      <button id="saveViewBtn" class="panel-action-btn">Save View</button>
-      <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
-    </div>
+<!-- Contenido principal -->
+<main class="main-content">
+  <div class="table-toolbar">
+    <div style="flex: 1;"></div>
+    <input type="text" id="globalSearchInput" placeholder="Search..." class="search-input" />
   </div>
 
-  <!-- 🗂 Modal para gestionar vistas -->
-  <div id="manageViewsModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Manage Saved Views</h2>
-      <ul id="savedViewsList"></ul>
-      <button id="closeManageViews">Close</button>
-    </div>
-  </div>
+  <div class="table-container" id="tableContainer"></div>
 
-  <!-- 📋 Modal para gestionar vistas de filtros -->
-  <div id="manageFilterViewsModal" class="modal hidden">
-    <div class="modal-content">
-      <h2>Manage Filter Views</h2>
-      <ul id="savedFilterViewsList" class="manage-views-list">
-        <li class="view-item">
-          FOS-NORAM
-          <button class="delete-btn">✖</button>
-        </li>
-      </ul>
-      <button id="closeManageFilterViews" class="modal-close-btn">Close</button>
-    </div>
-  </div>
+  <section class="table-controls">
+    <label for="rowsPerPageSelect">Rows per page:
+      <select id="rowsPerPageSelect">
+        <option value="20">20</option>
+        <option value="50" selected>50</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="-1">All</option>
+      </select>
+    </label>
+    <div id="pagination" class="pagination"></div>
+    <span id="activeFilterName"></span>
+    <span id="recordCount"></span>
+  </section>
+</main>
 
-  <!-- 📦 CSV parser -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="../scripts/main.js"></script>
+<!-- Panel lateral de columnas -->
+<div id="overlay" class="overlay hidden"></div>
+<div id="columnsPanel" class="offcanvas-panel hidden">
+  <div class="offcanvas-header">
+    <h3>Select columns</h3>
+    <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">x</button>
+  </div>
+  <div id="columnVisibility" class="offcanvas-body"></div>
+
+  <div class="views-controls">
+    <button id="saveViewBtn" class="panel-action-btn">Save View</button>
+    <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
+  </div>
+</div>
+
+<!-- Modales -->
+<div id="manageViewsModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Manage Saved Views</h2>
+    <ul id="savedViewsList"></ul>
+    <button id="closeManageViews">Close</button>
+  </div>
+</div>
+
+<div id="manageFilterViewsModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Manage Filter Views</h2>
+    <ul id="savedFilterViewsList" class="manage-views-list">
+      <li class="view-item">
+        FOS-NORAM
+        <button class="delete-btn">✖</button>
+      </li>
+    </ul>
+    <button id="closeManageFilterViews" class="modal-close-btn">Close</button>
+  </div>
+</div>
+
+<!-- CSV parser -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script type="module" src="../scripts/main.js"></script>
+
+
 
 </body>
 </html>
