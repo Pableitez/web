@@ -1513,3 +1513,50 @@
   width: 50px;
   font-size: 0.85rem;
 }
+.styled-multiselect {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 0.9rem;
+  color: #0a2337;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.panel-action-btn.reset {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.panel-action-btn.reset:hover {
+  background-color: #ffc2c2;
+}
+
+.panel-action-btn.compare {
+  background-color: #0a2337;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.panel-action-btn.compare:hover {
+  background-color: #14344d;
+}
