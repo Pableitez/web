@@ -199,8 +199,18 @@ resetBtn.className = 'panel-action-btn reset';
   resetBtn.style.marginTop = '0.5rem';
   footer.appendChild(resetBtn);
 
-  panel.appendChild(footer);
-  document.body.appendChild(panel);
+panel.appendChild(footer);
+document.body.appendChild(panel);
+
+// ✅ Mostrar overlay derecho y manejar cierre al hacer clic
+const rightOverlay = document.getElementById('rightOverlay');
+if (rightOverlay) {
+  rightOverlay.classList.remove('hidden');
+  rightOverlay.onclick = () => {
+    panel.remove();
+    rightOverlay.classList.add('hidden');
+  };
+}
 
   resetBtn.onclick = () => {
     csvSelect.selectedIndex = -1;
@@ -232,6 +242,8 @@ resetBtn.className = 'panel-action-btn reset';
     renderComparisonResults(data);
   };
 }
+
+
 
 function runComparisonMultiple(csvList, { keys, fields, onlyDiffs, dateThresholds = {} }) {
   const buildKey = row => keys.map(k => (row[k] || '').trim()).join('|');
@@ -290,14 +302,24 @@ function runComparisonMultiple(csvList, { keys, fields, onlyDiffs, dateThreshold
 function renderComparisonResults(data) {
   const container = document.getElementById('tableContainer');
   container.innerHTML = '';
-  if (!data.length) return (container.innerHTML = '<p>No differences found.</p>');
+  container.classList.add('comparison-mode'); // Añadido para estilo general
+
+  // ✅ Mostrar overlay
+  const overlay = document.getElementById('comparisonOverlay');
+  if (overlay) overlay.classList.remove('hidden');
+
+  if (!data.length) {
+    container.innerHTML = '<p class="no-differences-msg">No differences found.</p>';
+    return;
+  }
 
   const table = document.createElement('table');
-  table.className = 'data-table';
+  table.className = 'data-table comparison-table'; // Nueva clase específica
   const thead = document.createElement('thead');
   const tr = document.createElement('tr');
   Object.keys(data[0]).forEach(k => {
     const th = document.createElement('th');
+    th.className = 'comparison-header-cell'; // Clase añadida
     th.textContent = k;
     tr.appendChild(th);
   });
@@ -307,8 +329,10 @@ function renderComparisonResults(data) {
   const tbody = document.createElement('tbody');
   data.forEach(row => {
     const tr = document.createElement('tr');
+    tr.className = 'comparison-row'; // Clase añadida
     Object.values(row).forEach(val => {
       const td = document.createElement('td');
+      td.className = 'comparison-cell'; // Clase añadida
       td.textContent = val;
       tr.appendChild(td);
     });
@@ -316,4 +340,49 @@ function renderComparisonResults(data) {
   });
   table.appendChild(tbody);
   container.appendChild(table);
+
+  
+
+  $(table).DataTable({
+    dom: 'Bfrtip',
+    buttons: ['copy', 'excel', 'pdf'],
+    pageLength: 25
+  });
+}
+
+
+
+
+function parseFlexibleDate(value) {
+  if (!value || typeof value !== "string") return null;
+
+  // dd/mm/yyyy hh:mm:ss o dd-mm-yyyy hh:mm:ss (hora opcional)
+  const match = value.match(
+    /^(\d{2})[\/\-](\d{2})[\/\-](\d{4})(?:\s+(\d{2}):(\d{2})(?::(\d{2}))?)?$/
+  );
+
+  if (match) {
+    const [, day, month, year, hours = "00", minutes = "00", seconds = "00"] = match;
+    return new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}`);
+  }
+
+  // ISO 8601 fallback
+  const parsed = Date.parse(value);
+  return isNaN(parsed) ? null : new Date(parsed);
+}
+
+
+function exportCurrentTableAsCSV() {
+  const table = document.querySelector('table');
+  if (!table) return;
+  const rows = Array.from(table.querySelectorAll('tr')).map(row =>
+    Array.from(row.querySelectorAll('th, td')).map(cell => `"${cell.textContent}"`).join(',')
+  );
+  const csvContent = rows.join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'csv_comparison_report.csv');
+  link.click();
 }

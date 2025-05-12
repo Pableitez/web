@@ -1,7 +1,16 @@
+
+
 import { initCSVComparator } from './csvcomparator.js';
    // 📦 IndexedDB setup
-      let db;
-      let loadedCSVs = [];
+let db;
+let originalData = [];
+let filteredData = [];
+let currentHeaders = [];
+let currentPage = 1;
+let initialCSVData = null;
+const filterValues = {};
+let loadedCSVs = [];
+
       const DB_NAME = 'embarquesDB';
       const STORE_NAME = 'csvVersions';
 
@@ -29,13 +38,7 @@ import { initCSVComparator } from './csvcomparator.js';
       // 🚀 App initialization
       document.addEventListener("DOMContentLoaded", function () {
         initDB();
-        let originalData = [];
-        let filteredData = [];
-        let currentPage = 1;
-        const filterValues = {};
-        let currentHeaders = [];
        
-
         document.getElementById("csvFileInput").addEventListener("change", function (e) {
           const file = e.target.files[0];
           if (!file) return;
@@ -45,6 +48,7 @@ import { initCSVComparator } from './csvcomparator.js';
             skipEmptyLines: true,
             complete: function (results) {
               originalData = results.data;
+              initialCSVData = [...results.data];
               filteredData = [...originalData];
               currentHeaders = Object.keys(originalData[0]);
               generateFilterSidebar(currentHeaders); 
@@ -1016,14 +1020,30 @@ function groupCSVOptions() {
   // Reubicar los botones originales
   const fileLabel = document.querySelector("label[for='csvFileInput']");
   const fileInput = document.getElementById("csvFileInput");
+
   const multiLabel = document.querySelector("label[for='csvMultiInput']");
   const multiInput = document.getElementById("csvMultiInput");
+
   const setupBtn = document.getElementById("setupComparisonBtn");
 
-  // Añadir al menú (preservando funcionalidad)
-  if (fileLabel && fileInput) menu.appendChild(fileLabel);
-  if (multiLabel && multiInput) menu.appendChild(multiLabel);
-  if (setupBtn) menu.appendChild(setupBtn);
+  // 💬 Renombrar y unificar estilos
+  if (fileLabel) {
+    fileLabel.textContent = "Select CSV File";
+    fileLabel.className = "dropdown-item";
+    menu.appendChild(fileLabel);
+  }
+
+  if (multiLabel) {
+    multiLabel.textContent = "Upload CSVs to Compare";
+    multiLabel.className = "dropdown-item";
+    menu.appendChild(multiLabel);
+  }
+
+  if (setupBtn) {
+    setupBtn.textContent = "Start Comparison";
+    setupBtn.className = "dropdown-item";
+    menu.appendChild(setupBtn);
+  }
 
   wrapper.appendChild(toggleBtn);
   wrapper.appendChild(menu);
@@ -1040,6 +1060,7 @@ function groupCSVOptions() {
     menu.style.display = "none";
   });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   setupManageLoadedCSVsModal();
@@ -1120,3 +1141,32 @@ if (!Array.isArray(loadedCSVs) || loadedCSVs.length === 0) {
 
   dropdownMenu.appendChild(btn);
 }
+
+document.getElementById("comparisonOverlay").addEventListener("click", () => {
+  const overlay = document.getElementById("comparisonOverlay");
+  const container = document.getElementById("tableContainer");
+
+  // Oculta overlay y limpia la tabla de comparación
+  overlay.classList.add("hidden");
+  container.innerHTML = "";
+  container.classList.remove("comparison-mode"); // elimina estilo de comparación
+
+  // Restaura la tabla principal
+  if (Array.isArray(initialCSVData) && initialCSVData.length > 0) {
+    originalData = [...initialCSVData];
+    filteredData = [...originalData];
+    currentHeaders = Object.keys(originalData[0]);
+
+    generateFilterSidebar(currentHeaders);
+    generateColumnVisibilityControls(currentHeaders);
+    applyFilters();
+    populateSavedViews();
+    populateFilterViews();
+
+    const pageSize = getRowsPerPage();
+    displayTable(filteredData, 1, pageSize);
+  } else {
+    container.innerHTML = "<p>No initial CSV loaded.</p>";
+  }
+});
+

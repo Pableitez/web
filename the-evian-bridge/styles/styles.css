@@ -196,6 +196,7 @@
     border-radius: 6px;
     position: relative;
     margin-top: 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.497); /* ✅ sombra añadida */
   }
   
   .table-container table {
@@ -1560,3 +1561,4 @@
 .panel-action-btn.compare:hover {
   background-color: #14344d;
 }
+
