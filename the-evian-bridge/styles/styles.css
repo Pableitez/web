@@ -87,7 +87,7 @@
   
   /* ===== CSV Button ===== */
   .custom-file-upload {
-    background-color: #0a2337;
+    background-color: #316294;
     color: white;
     font-weight: 600;
     padding: 0.5rem 1rem;
@@ -247,6 +247,7 @@
   
   /* ===== Pagination & Controls ===== */
   .table-controls {
+    height: 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -254,23 +255,30 @@
     padding: 0 1rem;
   }
   .pagination {
+    height: 24px;
     display: flex;
     flex-wrap: wrap;
     gap: 0.3rem;
     margin-top: 0;
   }
   
-  .pagination button {
-    background-color: #0a2337;
-    color: white;
-    border: none;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s, transform 0.1s ease, box-shadow 0.1s ease;
-  }
-  
+.pagination button {
+  height: 24px;
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0 0.75rem; /* Quitamos padding vertical */
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  line-height: 24px; /* Igual que la altura del botón */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
   .pagination button:hover:not(:disabled) {
     background-color: #14344d;
   }
@@ -859,14 +867,22 @@
 .search-input {
   padding: 0.5rem;
   font-size: 0.9rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #ccc;
   width: 250px;
-
-  /* 🔧 Ajuste de márgenes */
+  height: 24px;
   margin-top: 0.3rem;
   margin-bottom: 0.3rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.459); /* 🌟 sombra suave */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
+
+.search-input:focus {
+  outline: none;
+  border-color: #0a2337;
+  box-shadow: 0 0 0 3px rgba(10, 35, 55, 0.432); /* 🎯 resaltado al enfocar */
+}
+
 
 .views-controls {
   display: flex;
@@ -1214,7 +1230,7 @@
 }
 
 .csv-dropdown-toggle:hover {
-  background-color: #3a556f;
+  background-color: #316294;
 }
 
 .csv-dropdown-menu .dropdown-item {
@@ -1232,7 +1248,7 @@
 }
 
 .csv-dropdown-menu .dropdown-item:hover {
-  background-color: #35506a;
+  background-color: #316294;
 }
 /* 🧾 Panel de comparación de CSVs */
 #comparisonPanel {
@@ -1562,3 +1578,102 @@
   background-color: #14344d;
 }
 
+.panel-action-btn.export-excel {
+  background-color: #316294;   /* azul claro distinto */
+  color: #ffffff;              /* texto blanco */
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.336);  /* sombra azulada */
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.panel-action-btn.export-excel:hover {
+  background-color: #316294;   /* un poco más oscuro al hacer hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.315); 
+}
+
+.panel-action-btn.export-excel:active {
+  transform: scale(0.96);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Botón desplegable plano *//* Botón de filtro */
+.filters-toggle-btn {
+  height: 24px;
+  width: 250px; /* Match con .search-input */
+  padding: 0 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background-color: #fbeaea;
+  color: #7a2c2c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-start; /* 👈 Alinea a la izquierda */
+  text-align: left;           
+  
+  /* ✅ Sombra similar al botón Export */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease; /* 👈 Asegura texto alineado */ 
+}
+
+
+.filters-toggle-btn:hover {
+  background-color: #f8dada;
+    background-color: #f8dada;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35); /* más intensa al hacer hover */
+}
+
+
+/* Evitar efecto visual de "saltar" al abrir */
+.filters-dropdown-container {
+  position: relative;
+  width: 300px;
+}
+
+/* Panel desplegable muy sobrio */
+.filters-dropdown {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  width: 100%;
+  background: transparent;          /* 🔥 sin fondo blanco */
+  border: none;                     /* ❌ sin borde extra */
+  padding: 0;                       /* ❌ sin padding */
+  box-shadow: none;                 /* ❌ sin sombra envolvente */
+  z-index: 100;
+}
+
+/* Lista vertical simple */
+.filters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.filter-pill {
+  background: #fbeaea;
+  border: 1px solid #e09a9a;
+  color: #7a2c2c;
+  padding: 2px 6px; /* Menos relleno horizontal y vertical */
+  border-radius: 4px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2;
+}
+
+.filter-pill button {
+  background: none;
+  border: none;
+  color: #b00020;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  cursor: pointer;
+}

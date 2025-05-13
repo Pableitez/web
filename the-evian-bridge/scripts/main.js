@@ -57,6 +57,29 @@ let loadedCSVs = [];
               populateSavedViews();
               populateFilterViews();
 
+
+              // Botón Export to Excel
+const exportBtn = document.getElementById("exportExcelBtn");
+if (exportBtn) {
+  exportBtn.addEventListener("click", () => {
+    if (!filteredData || filteredData.length === 0) {
+      alert("No data to export.");
+      return;
+    }
+
+    const headers = Object.keys(filteredData[0]);
+    const rows = filteredData.map(row => headers.map(h => row[h]));
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Export");
+
+    const filename = `evian_export_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  });
+}
+
+
               const toggleHeader = document.getElementById("toggleSavedFilters");
       if (toggleHeader) {
         toggleHeader.addEventListener("click", () => {
@@ -471,7 +494,56 @@ function applyFilters() {
 
   const pageSize = getRowsPerPage();
   displayTable(filteredData, 1, pageSize);
+  updateActiveFiltersSummary();
+
 }
+
+function updateActiveFiltersSummary() {
+  const summaryEl = document.getElementById("filtersSummaryText");
+  const box = document.getElementById("activeFiltersSummary");
+
+  summaryEl.innerHTML = "";
+
+  const entries = Object.entries(filterValues);
+  if (!entries.length) {
+    box.style.display = "none";
+    return;
+  }
+
+  entries.forEach(([key, value]) => {
+    const pill = document.createElement("div");
+    pill.className = "filter-pill";
+
+    let label = "";
+
+    if (Array.isArray(value)) {
+      label = `${key}: ${value.join(", ")}`;
+    } else if (typeof value === "boolean") {
+      if (value) label = `${key.replace("_empty", "")}: (empty)`;
+    } else if (key.endsWith("_start") || key.endsWith("_end")) {
+      const base = key.replace(/_(start|end)$/, "");
+      const type = key.endsWith("_start") ? "from" : "to";
+      label = `${base} ${type}: ${value}`;
+    } else {
+      label = `${key}: ${value}`;
+    }
+
+    pill.textContent = label;
+
+    const x = document.createElement("button");
+    x.textContent = "✕";
+    x.addEventListener("click", () => {
+      delete filterValues[key];
+      applyFilters(); // vuelve a generar todo
+    });
+
+    pill.appendChild(x);
+    summaryEl.appendChild(pill);
+  });
+
+  box.style.display = "block";
+}
+
 
 
 function isDateField(key) {
@@ -1076,7 +1148,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   observer.observe(document.body, { childList: true, subtree: true });
 
-  groupCSVOptions(); // esto generará .csv-dropdown-menu
+  groupCSVOptions(); 
+    // ✅ Bloque para activar el desplegable de filtros
+  const toggleBtn = document.getElementById("toggleFiltersDropdown");
+  const dropdown = document.getElementById("filtersDropdown");
+  const toggleLabel = document.getElementById("filtersToggleLabel");
+
+  if (toggleBtn && dropdown && toggleLabel) {
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dropdown.style.display === "block";
+      dropdown.style.display = isOpen ? "none" : "block";
+      toggleLabel.textContent = isOpen ? "Filters ▼" : "Filters ▲";
+    });
+
+    document.addEventListener("click", (e) => {
+      const summaryBox = document.getElementById("activeFiltersSummary");
+      if (!summaryBox.contains(e.target)) {
+        dropdown.style.display = "none";
+        toggleLabel.textContent = "Filters ▼";
+      }
+    });
+  }
 });
 
 function setupManageLoadedCSVsModal() {
