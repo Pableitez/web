@@ -419,7 +419,6 @@ function generateFilterSidebar(headers) {
   }); // ← cierre del headers.forEach
 }  
 
-
 function applyFilters() {
   function parseDateStrict(value) {
     if (!value) return null;
