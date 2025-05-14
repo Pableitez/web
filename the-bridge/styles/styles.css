@@ -1,0 +1,1920 @@
+/* ===== Reset base ===== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #dcdcdc, #bcbcbc);
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  /* ===== Toolbar ===== */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0a2337;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    margin: 0.5rem 1rem;
+    min-height: 56px;
+  }
+  
+  .toolbar-title {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .toolbar-title h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0;
+    white-space: nowrap;
+  }
+  
+  /* ===== Dropdown for Views ===== */
+  .view-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .view-dropdown select,
+  .view-dropdown button {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background-color: #0a2337;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  
+  .view-dropdown button:hover {
+    background-color: #14344d;
+  }
+  
+  /* ===== View Actions Dropdown Buttons ===== */
+  .dropdown-menu button.action-button {
+    background-color: #14344d;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+  
+  .dropdown-menu button.action-button:hover {
+    background-color: #1c4a6b;
+  }
+  
+  /* ===== CSV Button ===== */
+  .custom-file-upload {
+    background-color: #316294;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-block;
+    border: none;
+    user-select: none;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #14344d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .custom-file-upload:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+  }
+  
+  .custom-file-upload input[type="file"] {
+    display: none;
+  }
+  
+  .filename-display {
+    color: white;
+    font-weight: normal;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* ===== Main Layout ===== */
+  .main-content {
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+    padding: 0 1rem 1rem 1rem; /* Sin padding arriba */
+    margin: 0 1rem; /* Eliminamos el margin-top */
+    max-width: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+  }
+  
+  
+  /* ===== Buttons ===== */
+  #toggleFiltersBtn,
+  #toggleColumnsBtn {
+    background-color: #0a2337;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    font-weight: 600;
+  }
+  
+  #toggleFiltersBtn:hover,
+  #toggleColumnsBtn:hover {
+    background-color: #14344d;
+  }
+  
+  #toggleFiltersBtn:active,
+  #toggleColumnsBtn:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* ===== Filters ===== */
+  .filters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .filter-block {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.2rem; /* o más si lo prefieres */
+  }
+  
+  .filter-block input {
+    padding: 0.4rem;
+    border: 1px solid #999;
+    border-radius: 4px;
+  }
+  
+  #filtersContainer.hidden {
+    display: none;
+  }
+  
+  /* ===== Table ===== */
+  .table-container {
+    flex-grow: 1;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1px solid #aaa;
+    background-color: #f0f0f0;
+    border-radius: 6px;
+    position: relative;
+    margin-top: 0;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.497); /* ✅ sombra añadida */
+  }
+  
+  .table-container table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 1200px;
+    table-layout: auto;
+    font-size: 0.85rem;
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #d0d0d0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .table-container th {
+    background-color: #0a2337;
+    color: white;
+    text-align: left;
+  }
+  
+  .table-container tr:nth-child(even) {
+    background-color: #eaeaea;
+  }
+  
+  .table-container tr:hover {
+    background-color: #d5e3f1;
+  }
+  
+  td:hover {
+    background-color: #e0eefc;
+    overflow: visible;
+    white-space: normal;
+    z-index: 1;
+    position: relative;
+  }
+  
+  .table-container table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #0a2337;
+    z-index: 2;
+  }
+  
+  /* ===== Pagination & Controls ===== */
+  .table-controls {
+    height: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 0 1rem;
+  }
+  .pagination {
+    height: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0;
+  }
+  
+.pagination button {
+  height: 24px;
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0 0.75rem; /* Quitamos padding vertical */
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  line-height: 24px; /* Igual que la altura del botón */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+  .pagination button:hover:not(:disabled) {
+    background-color: #14344d;
+  }
+  
+  .pagination button:disabled {
+    background-color: #666;
+    color: #ccc;
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  
+  .pagination button:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* ===== Offcanvas Panel ===== */
+  .offcanvas-panel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px; /* igual que el left-panel */
+    height: 100vh;
+    background: #fff;
+    border-left: 1px solid #ccc;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    z-index: 999;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+  
+  .offcanvas-panel.hidden {
+    transform: translateX(100%);
+  }
+  
+  .offcanvas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .offcanvas-body label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .filters-container {
+      flex-direction: column;
+    }
+  
+    .table-container table {
+      font-size: 0.85rem;
+    }
+  
+    .toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .toolbar-left,
+    .toolbar-right {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+  
+    .filename-display {
+      max-width: 100%;
+    }
+  
+    .table-controls {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .pagination {
+      justify-content: flex-start;
+    }
+  }
+  
+
+  
+  /* ===== Dropdown General ===== */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-toggle {
+    background-color: #0a2337;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .dropdown-toggle:hover {
+    background-color: #14344d;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #0a2337;
+    border-radius: 6px;
+    padding: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    min-width: 150px;
+  }
+  
+  .dropdown-menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 0.4rem;
+    color: white;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .dropdown-menu button:hover {
+    background-color: #14344d;
+  }
+  
+  .dropdown:hover .dropdown-menu {
+    display: block;
+  }
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .modal.hidden {
+    display: none;
+  }
+  
+  #savedViewsList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  #savedViewsList button {
+    margin-left: 0.5rem;
+  }
+  
+  /* === Toolbar select styled as button === */
+  .toolbar select.toolbar-button {
+    background-color: #0a2337;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    appearance: none;
+    height: 42px;
+    line-height: 1.2;
+    vertical-align: middle;
+    box-sizing: border-box;
+  }
+  
+  
+  
+  /* === Modal styling === */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(10, 35, 55, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  
+  .modal.hidden {
+    display: none;
+  }
+  
+  .modal-content {
+    background-color: #ffffff;
+    color: #0a2337;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    text-align: left;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    color: #0a2337;
+  }
+  
+  #savedViewsList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  #savedViewsList li {
+    padding: 0.5rem 0.75rem;
+    background: #f5f5f5;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  #savedViewsList button {
+    background-color: #d9534f;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    color: white;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  #savedViewsList button:hover {
+    background-color: #c9302c;
+  }
+  
+  #closeManageViews {
+    background-color: #0a2337;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    float: right;
+  }
+  
+  #closeManageViews:hover {
+    background-color: #14344d;
+  }
+
+  .offcanvas-body {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    padding-right: 0.75rem;
+    scrollbar-width: thin;
+  }
+  
+  #columnVisibility {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  
+  #columnVisibility label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.2rem;
+    font-size: 0.9rem;
+    background-color: #f8f8f8;
+    border-radius: 4px;
+    padding-left: 0.4rem;
+  }
+  
+  #columnVisibility input[type="checkbox"] {
+    transform: scale(1.1);
+  }
+  
+  /* === Overlay background === */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 998;
+    transition: opacity 0.3s ease;
+  }
+  
+  .overlay.hidden {
+    display: none;
+  }
+  
+/* ===== Scrollbar redondeada ===== */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+  
+  /* ===== Panel lateral filtros ===== */
+
+  .left-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 400px;
+    bottom: 0;
+    background-color: #f9f9f9;
+    border-right: 1px solid #ccc;
+    padding: 1rem;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: visible;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .left-panel h3 {
+    margin-bottom: 1rem;
+    color: #0a2337;
+  }
+  
+
+  
+  .filter-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .filter-inputs input {
+    padding: 0.4rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+
+  .left-panel.hidden {
+    transform: translateX(-100%);
+  }
+  
+
+  .panel-action-btn {
+    background-color: #0a2337;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    margin-right: 0.5rem; /* opcional para separar botones */
+  }
+  
+  .panel-action-btn:hover {
+    background-color: #14344d;
+  }
+  
+  .panel-action-btn:active {
+    transform: scale(0.95);
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
+  }
+  
+  .filter-block.active {
+    background-color: #e8f1ff;
+    border: 1px solid #0a2337;
+    box-shadow: 0 0 5px rgba(10, 35, 55, 0.6);
+    border-radius: 6px;
+    padding: 0.5rem;
+  }
+ /* Botones agrupadores más integrados */
+/* Unificar separación entre secciones */
+.filter-wrapper {
+  margin-bottom: 16px;
+}
+
+/* Asegura consistencia entre botones tipo sección */
+.filter-toggle {
+  background-color: #0b2a4a;
+  color: white;
+  padding: 10px 16px;
+  font-weight: bold;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+}
+
+/* Opcional: hover sutil */
+.filter-toggle:hover {
+  background-color: #0d3d5f;
+}
+
+/* Consistencia en el select debajo */
+#savedFiltersContainer select {
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+
+/* Contenedor justo debajo del botón */
+.filter-group {
+  background-color: #f6f8fa;
+  padding: 0.6rem 1rem 1rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0 0 6px 6px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+/* Compacta los bloques individuales */
+.filter-block {
+  margin-bottom: 0.7rem;
+}
+
+
+
+
+  
+  .filter-group.collapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .filter-block > label {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+    white-space: nowrap; /* Evita salto de línea del texto */
+  }
+  
+  .filter-empty-checkbox {
+    transform: scale(0.9);
+    accent-color: #0a2337;
+    margin-left: 0; /* Quita margen */
+  }
+/* Solo aplica sombreado cuando el checkbox de empty está marcado */
+.filter-block:has(input.filter-empty-checkbox:checked) {
+  background-color: #eef4fb;
+  border: 1px solid #0a2337;
+  border-radius: 6px;
+  padding: 0.5rem;
+}
+
+.filter-toggle {
+  position: sticky;
+  top: 0; /* Mantiene el botón arriba al hacer scroll */
+  z-index: 10;
+  background-color: #0a2337;
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+  border: none;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.6rem 1rem;
+  margin: 0;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-reset-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.filter-reset-btn:hover {
+  color: #c00;
+}
+
+.filter-collapsible {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  background-color: #f6f9fc;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.filter-header {
+  padding: 0.45rem 0.6rem;
+  font-weight: 600;
+  background-color: #e1ecf4;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.filter-header:hover {
+  background-color: #d0e6f3;
+}
+
+.toggle-icon {
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+
+.filter-content {
+  display: none;
+  padding: 0.5rem;
+}
+
+.filter-content.visible {
+  display: block;
+}
+
+.filter-multiselect {
+  width: 100%;
+  height: 110px;
+  font-size: 0.9rem;
+  padding: 0.3rem;
+}
+
+.table-toolbar {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0.5rem 1rem 0.5rem 1rem;
+}
+
+.search-input {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 250px;
+  height: 24px;
+  margin-top: 0.3rem;
+  margin-bottom: 0.3rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.459); /* 🌟 sombra suave */
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0a2337;
+  box-shadow: 0 0 0 3px rgba(10, 35, 55, 0.432); /* 🎯 resaltado al enfocar */
+}
+
+
+.views-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.views-controls button {
+  min-width: 120px;
+}
+
+#filterViewSelect {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #f0f6ff;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-family: inherit;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  min-height: 120px;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+#filterViewSelect option {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+#filterViewSelect option:checked {
+  background-color: #007acc;
+  color: white;
+}
+
+
+#resetFiltersBtn {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+#resetFiltersBtn:hover {
+  background-color: #ffc2c2;
+}
+.manage-views-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.manage-views-list .view-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #0a2337;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.manage-views-list .view-item button {
+  background-color: #d9534f;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.manage-views-list .view-item button:hover {
+  background-color: #c9302c;
+}
+
+.modal-close-btn {
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.modal-close-btn:hover {
+  background-color: #14344d;
+}
+#savedFilterViewsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#savedFilterViewsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  color: #0a2337;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#savedFilterViewsList li button {
+  background-color: #d9534f;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  color: white;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+#savedFilterViewsList li button:hover {
+  background-color: #c9302c;
+}
+
+
+.column-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #f9f9f9;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.column-toggle:hover {
+  background: #f0f0f0;
+}
+
+.column-toggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #0a66c2;
+}
+
+.view-select-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.view-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: bold;
+  color: #0f172a;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.view-select-wrapper {
+  position: relative;
+  display: inline-block;
+  max-width: 220px;
+}
+
+.view-selector {
+  background-color: #0a2337;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  height: 42px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  appearance: none;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.view-selector:hover {
+  background-color: #14344d;
+}
+
+.view-selector:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(100, 160, 220, 0.3);
+}
+
+.view-selector option {
+  background-color: #0a2337;
+  color: white;
+}
+
+#savedFiltersContainer {
+  margin-bottom: 1.5rem;
+}
+
+/* Estilo del menú desplegable */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #1e2d3d;
+  min-width: 180px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  padding: 0.5rem 0;
+  border-radius: 6px;
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-item {
+  color: white;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  width: 100%;
+  display: block;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.dropdown-item:hover {
+  background-color: #294057;
+}
+
+/* 🔽 Contenedor del dropdown */
+.csv-options-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* 🔘 Botón que despliega el menú */
+.csv-dropdown-toggle {
+  background-color: #1e2d3d;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+/* 📂 Menú desplegable oculto por defecto */
+.csv-dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #1e2d3d;
+  min-width: 180px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+}
+
+/* 📁 Estilo para cada opción */
+.csv-dropdown-menu label,
+.csv-dropdown-menu button {
+  display: block;
+  width: 100%;
+  background: none;
+  color: white;
+  border: none;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.csv-dropdown-menu label:hover,
+.csv-dropdown-menu button:hover {
+  background-color: #294057;
+}
+
+.csv-dropdown-menu {
+  background-color: #1e2d3d;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  padding: 0.25rem 0;
+  min-width: 180px;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  display: none;
+}
+
+.csv-options-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.csv-dropdown-toggle {
+  background-color: #294057;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 4px;
+}
+
+.csv-dropdown-toggle:hover {
+  background-color: #316294;
+}
+
+.csv-dropdown-menu .dropdown-item {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.95rem;  /* tamaño uniforme */
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+.csv-dropdown-menu .dropdown-item:hover {
+  background-color: #316294;
+}
+/* 🧾 Panel de comparación de CSVs */
+#comparisonPanel {
+  background-color: #ffffff;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 2rem auto;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+/* Títulos */
+#comparisonPanel h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+#comparisonPanel select,
+#comparisonPanel input[type="checkbox"] {
+  font-size: 0.95rem;
+}
+
+/* Select general */
+#comparisonPanel select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* Secciones */
+.comparison-section {
+  margin-bottom: 2rem;
+}
+
+.comparison-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0.8rem;
+}
+
+.comparison-buttons button {
+  padding: 0.4rem 0.8rem;
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.comparison-buttons button:hover {
+  background-color: #0052a3;
+}
+
+/* Cuadro de columnas clave */
+.key-columns-box {
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+}
+
+/* Grid de campos de comparación */
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* 🧾 Modal de Comparación Mejorado */
+#comparisonPanel.modal {
+  background: rgba(0, 0, 0, 0.5); /* overlay oscuro */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#comparisonPanel .modal-content {
+  background-color: #ffffff;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#comparisonPanel h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  color: #0a2337;
+  font-weight: bold;
+}
+
+#comparisonPanel .comparison-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+#comparisonPanel select,
+#comparisonPanel .fields-grid {
+  width: 100%;
+}
+
+#comparisonPanel select {
+  padding: 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+#comparisonPanel .comparison-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#comparisonPanel .comparison-buttons button {
+  padding: 0.4rem 0.8rem;
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+#comparisonPanel .comparison-buttons button:hover {
+  background-color: #14344d;
+}
+
+#comparisonPanel .fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+#comparisonPanel label {
+  font-size: 0.95rem;
+}
+
+#comparisonPanel input[type="checkbox"] {
+  transform: scale(1.1);
+  margin-right: 0.4rem;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 6px;
+  padding: 0.3rem;
+  border-radius: 6px;
+  background-color: #f1f1f1;
+  transition: background-color 0.2s ease;
+}
+
+.field-row:hover {
+  background-color: #e3e3e3;
+}
+
+.field-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 0.4rem;
+}
+
+.field-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #0a2337;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.field-threshold {
+  width: 65px;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+/* === Selectores personalizados para listas múltiples === */
+
+.custom-multiselect option {
+  padding: 0.3rem 0.4rem;
+  cursor: pointer;
+}
+
+.custom-multiselect option:checked {
+  background-color: #007acc;
+  color: white;
+}
+
+.custom-multiselect {
+  width: 100%;
+  min-height: 90px;
+  max-height: 140px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  font-family: 'Segoe UI', sans-serif;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  color: #0a2337;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+.field-multiselect {
+  width: 100%;
+  height: 110px;
+  font-size: 0.9rem;
+  padding: 0.3rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+.fields-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+.field-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f1f1f1;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.field-wrapper:hover {
+  background-color: #e1ecf4;
+}
+
+.field-threshold {
+  margin-left: auto;
+  width: 50px;
+  font-size: 0.85rem;
+}
+.styled-multiselect {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 0.9rem;
+  color: #0a2337;
+  margin-bottom: 1rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.panel-action-btn.reset {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.panel-action-btn.reset:hover {
+  background-color: #ffc2c2;
+}
+
+.panel-action-btn.compare {
+  background-color: #0a2337;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  width: 100%;
+}
+
+.panel-action-btn.compare:hover {
+  background-color: #14344d;
+}
+
+.panel-action-btn.export-excel {
+  background-color: #316294;   /* azul claro distinto */
+  color: #ffffff;              /* texto blanco */
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.336);  /* sombra azulada */
+  transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.panel-action-btn.export-excel:hover {
+  background-color: #316294;   /* un poco más oscuro al hacer hover */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.315); 
+}
+
+.panel-action-btn.export-excel:active {
+  transform: scale(0.96);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Botón desplegable plano *//* Botón de filtro */
+.filters-toggle-btn {
+  height: 24px;
+  width: 250px; /* Match con .search-input */
+  padding: 0 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  background-color: #fbeaea;
+  color: #7a2c2c;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-start; /* 👈 Alinea a la izquierda */
+  text-align: left;           
+  
+  /* ✅ Sombra similar al botón Export */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease; /* 👈 Asegura texto alineado */ 
+}
+
+
+.filters-toggle-btn:hover {
+  background-color: #f8dada;
+    background-color: #f8dada;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35); /* más intensa al hacer hover */
+}
+
+
+/* Evitar efecto visual de "saltar" al abrir */
+.filters-dropdown-container {
+  position: relative;
+  width: 300px;
+}
+
+/* Panel desplegable muy sobrio */
+.filters-dropdown {
+  position: absolute;
+  top: 38px;
+  left: 0;
+  width: 100%;
+  background: transparent;          /* 🔥 sin fondo blanco */
+  border: none;                     /* ❌ sin borde extra */
+  padding: 0;                       /* ❌ sin padding */
+  box-shadow: none;                 /* ❌ sin sombra envolvente */
+  z-index: 100;
+}
+
+/* Lista vertical simple */
+.filters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
+.filter-pill {
+  background: #fbeaea;
+  border: 1px solid #e09a9a;
+  color: #7a2c2c;
+  padding: 2px 6px; /* Menos relleno horizontal y vertical */
+  border-radius: 4px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  line-height: 1.2;
+}
+
+.filter-pill button {
+  background: none;
+  border: none;
+  color: #b00020;
+  font-size: 0.8rem;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* Contenedor de multiselect estilizado */
+.filter-block select,
+.selectized {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  min-height: 36px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f3f6f9;
+  width: 100%;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  line-height: 1.2;
+}
+
+/* Estilo para cada "pill" seleccionada si usas selectize.js, choices.js o similar */
+.selectized .item {
+  display: inline-block;
+  background-color: #dbeaf7;
+  color: #003d5c;
+  padding: 2px 6px;
+  margin: 2px 4px 2px 0;
+  font-size: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid #99c8e4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón de quitar valor (X) */
+.selectized .item .remove {
+  color: #7a2c2c;
+  margin-left: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* Reduce espacio entre elementos si está dentro de .filter-block */
+.filter-block {
+  margin-bottom: 0.6rem;
+}
+
+/* Etiquetas de los campos más pequeñas pero legibles */
+.filter-block label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  color: #0a2337;
+}
+
+.filter-collapsible.expanded {
+  background-color: #ffffff;
+  border: 2px solid #007acc;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+/* Overlay del modal */
+.filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Contenedor principal del modal */
+.filter-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Cabecera con título y botón de cierre */
+.offcanvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Título */
+.filter-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1b2c3b;
+  margin: 0;
+}
+
+/* Cuerpo dividido en pestañas + contenido */
+.filter-modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Pestañas a la izquierda */
+.filter-tabs {
+  flex: 0 0 200px;
+  background-color: #f9f9f9;
+  border-right: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 0;
+}
+
+.filter-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 500;
+  color: #222;
+}
+
+.filter-tab.active {
+  background-color: #e7f0fe;
+  color: #0056d2;
+  border-left: 4px solid #2975ea;
+}
+
+/* Paneles de contenido */
+.filter-panels {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.filter-panel {
+  display: none;
+}
+
+.filter-panel.active {
+  display: block;
+}
+
+/* Panel dinámico de filtros (grid) */
+.filter-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* Pie del modal */
+.footer-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #eaeaea;
+  gap: 0.5rem;
+  background-color: #fafafa;
+}
+
+/* Botones */
+.panel-action-btn {
+  background-color: #0d1f2d;
+  color: white;
+  border: none;
+  padding: 0.45rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.panel-action-btn:hover {
+  background-color: #152e40;
+}
+
+.panel-action-btn.reset {
+  background-color: #fddede;
+  color: #a70000;
+  font-weight: bold;
+}
+
+.panel-action-btn.reset:hover {
+  background-color: #fbc8c8;
+}
+
+.panel-action-btn.primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.panel-action-btn.primary:hover {
+  background-color: #0056d2;
+}
+
+/* Botón cerrar */
+.panel-action-btn--small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  background-color: #0d1f2d;
+  color: white;
+  border-radius: 4px;
+}
+
+/* Opcional: scrollbar estilizado */
+.filter-panels::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filter-panels::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.overlay.hidden {
+  display: none;
+}
+.hidden {
+  display: none !important;
+}

@@ -1,0 +1,189 @@
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The Evian Bridge</title>
+    <link rel="stylesheet" href="styles/styles.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+  </head>
+  <body>
+
+  <!-- Toolbar superior -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="view-select-wrapper">
+        <select id="viewSelect" class="view-selector">
+          <option value="" disabled selected>Views</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="toolbar-title">
+      <h1>The Evian Bridge</h1>
+    </div>
+
+    <div class="toolbar-right">
+      <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
+      <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
+
+      <!-- archivo único -->
+      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+      <input type="file" id="csvFileInput" accept=".csv" hidden />
+
+      <!-- archivo múltiple -->
+      <label for="csvMultiInput" class="custom-file-upload">Compare CSV Files</label>
+      <input type="file" id="csvMultiInput" multiple accept=".csv" hidden />
+
+      <!-- Lista de archivos seleccionados -->
+      <div id="csvFileList" class="csv-file-list"></div>
+
+      <!-- Botón para configurar comparación -->
+      <button id="setupComparisonBtn" class="panel-action-btn">Setup Comparison</button>
+    </div>
+  </div>
+
+  <!-- Panel lateral izquierdo -->
+ <div id="leftFilterPanel" class="left-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Filters</h3>
+      <button id="closeFiltersPanel" class="panel-action-btn panel-action-btn--small">x</button>
+    </div>
+
+    <!-- Saved Filters -->
+    <div class="filter-wrapper" style="margin-bottom: 1.5rem;">
+      <div class="filter-collapsible">
+        <div class="filter-header" id="toggleSavedFilters">
+          <span>Saved Filters</span>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div class="filter-content visible" id="savedFiltersContainer">
+          <select id="filterViewSelect" multiple size="6" class="filter-multiselect">
+            <!-- opciones -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros dinámicos -->
+    <div id="filterInputsContainer" class="offcanvas-body filter-inputs"></div>
+
+    <!-- Controles -->
+    <div class="views-controls" style="margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+      <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+      <button id="resetFiltersBtn" class="panel-action-btn" style="margin-top: 0.5rem;">
+        Reset Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+<main class="main-content">
+  <div class="table-toolbar" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+    
+    <button id="exportExcelBtn" class="panel-action-btn export-excel">Export to Excel</button>
+
+    <!-- Grupo con filtros desplegables + buscador -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      
+      <!-- 🔽 Filtros activos (resumen desplegable) -->
+      <div class="filters-dropdown-container" id="activeFiltersSummary" style="display: none;">
+        <button class="filters-toggle-btn" id="toggleFiltersDropdown">
+          <span id="filtersToggleLabel">Filters ▼</span>
+        </button>
+        <div class="filters-dropdown" id="filtersDropdown" style="display: none;">
+          <div id="filtersSummaryText" class="filters-list"></div>
+        </div>
+      </div>
+
+      <!-- 🔍 Buscador -->
+      <input type="text" id="globalSearchInput" placeholder="Search..." class="search-input" />
+    </div>
+
+  </div>
+    <div class="table-container" id="tableContainer"></div>
+
+    <section class="table-controls">
+      <label for="rowsPerPageSelect">Rows per page:
+        <select id="rowsPerPageSelect">
+          <option value="20">20</option>
+          <option value="50" selected>50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="-1">All</option>
+        </select>
+      </label>
+      <div id="pagination" class="pagination"></div>
+      <span id="recordCount"></span>
+    </section>
+  </main>
+
+  <div id="rightOverlay" class="overlay hidden"></div>
+
+
+  <!-- Panel lateral de columnas -->
+  <div id="overlay" class="overlay hidden"></div>
+  <div id="columnsPanel" class="offcanvas-panel hidden">
+    <div class="offcanvas-header">
+      <h3>Select columns</h3>
+      <button id="closeColumnsPanel" class="panel-action-btn panel-action-btn--small">x</button>
+    </div>
+    <div id="columnVisibility" class="offcanvas-body"></div>
+
+    <div class="views-controls">
+      <button id="saveViewBtn" class="panel-action-btn">Save View</button>
+      <button id="manageViewsBtn" class="panel-action-btn">Manage Views</button>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div id="manageViewsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Manage Saved Views</h2>
+      <ul id="savedViewsList"></ul>
+      <button id="closeManageViews">Close</button>
+    </div>
+  </div>
+
+  <div id="manageFilterViewsModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Manage Filter Views</h2>
+      <ul id="savedFilterViewsList" class="manage-views-list">
+        <li class="view-item">
+          FOS-NORAM
+          <button class="delete-btn">✖</button>
+        </li>
+      </ul>
+      <button id="closeManageFilterViews" class="modal-close-btn">Close</button>
+    </div>
+  </div>
+
+  
+  <!-- CSV parser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- jQuery (necesario para DataTables) -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+  <!-- DataTables CSS y JS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- DataTables Buttons extension (exportar) -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+  <!-- Dependencias para Excel/PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script type="module" src="scripts/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script
+
+
+
+  </body>
+  </html>
