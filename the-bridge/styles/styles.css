@@ -1918,3 +1918,11 @@
 .hidden {
   display: none !important;
 }
+
+.filter-panel {
+  display: none;
+}
+
+.filter-panel.active {
+  display: block;
+}

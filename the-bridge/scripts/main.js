@@ -225,7 +225,6 @@ function generateFilterSidebar(headers) {
       div.appendChild(startInput);
       div.appendChild(endInput);
 
-      // Eventos
       startInput.addEventListener("input", () => {
         filterValues[col + "_start"] = startInput.value;
         applyFilters();
@@ -240,6 +239,7 @@ function generateFilterSidebar(headers) {
         filterValues[col + "_empty"] = emptyInput.checked;
         applyFilters();
       });
+
     } else {
       const select = document.createElement("select");
       select.multiple = true;
@@ -348,6 +348,8 @@ function generateFilterSidebar(headers) {
     collapsible.appendChild(header);
     collapsible.appendChild(content);
     wrapper.appendChild(collapsible);
+
+    // ✅ Aquí nos aseguramos de que se añade al contenedor correcto
     targetContainer.appendChild(wrapper);
 
     header.addEventListener("click", () => {
@@ -356,6 +358,7 @@ function generateFilterSidebar(headers) {
     });
   });
 }
+
 
 
 function applyFilters() {
