@@ -86,7 +86,6 @@ if (exportBtn) {
           const container = document.getElementById("savedFiltersContainer");
           const icon = toggleHeader.querySelector(".toggle-icon");
           container.classList.toggle("visible");
-          icon.textContent = container.classList.contains("visible") ? "▲" : "▼";
         });
       }
 
@@ -159,6 +158,7 @@ if (exportBtn) {
   }
 });
 
+
 function generateFilterSidebar(headers) {
   const genericContainer = document.getElementById("filterInputsContainer");
   const referenceContainer = document.getElementById("referenceFilterPanel");
@@ -192,7 +192,6 @@ function generateFilterSidebar(headers) {
 
     const toggleIcon = document.createElement("span");
     toggleIcon.className = "toggle-icon";
-    toggleIcon.textContent = "▼";
     header.appendChild(toggleIcon);
 
     const content = document.createElement("div");
@@ -218,7 +217,7 @@ function generateFilterSidebar(headers) {
       emptyInput.className = "filter-empty-checkbox";
 
       const label = document.createElement("label");
-      label.textContent = col;
+
       label.appendChild(emptyInput);
 
       div.appendChild(label);
@@ -240,6 +239,65 @@ function generateFilterSidebar(headers) {
         applyFilters();
       });
 
+    } else if (isReference) {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "reference-autocomplete";
+      input.placeholder = `Search ${col}...`;
+      input.dataset.key = col;
+
+      const suggestionBox = document.createElement("ul");
+      suggestionBox.className = "autocomplete-list hidden";
+
+      const uniqueValues = [...new Set(originalData.map(row => row[col] || "").map(String))].slice(0, 300);
+
+      input.addEventListener("input", () => {
+        const raw = input.value;
+        const parts = raw.split(",").map(p => p.trim()).filter(Boolean);
+        if (parts.length > 0) {
+          filterValues[col] = parts;
+          div.classList.add("active");
+        } else {
+          delete filterValues[col];
+          div.classList.remove("active");
+        }
+        applyFilters();
+
+        const last = parts.at(-1).toLowerCase();
+        suggestionBox.innerHTML = "";
+
+        const matches = uniqueValues.filter(val => val.toLowerCase().includes(last)).slice(0, 10);
+        if (matches.length === 0) {
+          suggestionBox.classList.add("hidden");
+          return;
+        }
+
+        matches.forEach(val => {
+          const li = document.createElement("li");
+          li.textContent = val;
+          li.className = "autocomplete-item";
+          li.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            const newParts = [...parts.slice(0, -1), val];
+            input.value = newParts.join(", ");
+            filterValues[col] = newParts;
+            div.classList.add("active");
+            suggestionBox.classList.add("hidden");
+            applyFilters();
+          });
+          suggestionBox.appendChild(li);
+        });
+
+        suggestionBox.classList.remove("hidden");
+      });
+
+      input.addEventListener("blur", () => {
+        setTimeout(() => suggestionBox.classList.add("hidden"), 150);
+      });
+
+      div.appendChild(input);
+      div.appendChild(suggestionBox);
+
     } else {
       const select = document.createElement("select");
       select.multiple = true;
@@ -247,12 +305,9 @@ function generateFilterSidebar(headers) {
       select.className = "filter-multiselect";
 
       try {
-        const uniqueValues = [
-          ...new Set(
-            originalData.map(row => row[col])
-              .map(val => (val === null || val === undefined) ? "" : val.toString().trim())
-          )
-        ].slice(0, 200);
+        const uniqueValues = [...new Set(
+          originalData.map(row => row[col] || "").map(String)
+        )].slice(0, 200);
 
         if (uniqueValues.includes("")) {
           const opt = document.createElement("option");
@@ -266,14 +321,12 @@ function generateFilterSidebar(headers) {
         allOption.textContent = "— All —";
         select.appendChild(allOption);
 
-        uniqueValues
-          .filter(val => val !== "")
-          .forEach(val => {
-            const option = document.createElement("option");
-            option.value = val;
-            option.textContent = val;
-            select.appendChild(option);
-          });
+        uniqueValues.filter(val => val !== "").forEach(val => {
+          const option = document.createElement("option");
+          option.value = val;
+          option.textContent = val;
+          select.appendChild(option);
+        });
 
         new Choices(select, {
           removeItemButton: true,
@@ -348,16 +401,14 @@ function generateFilterSidebar(headers) {
     collapsible.appendChild(header);
     collapsible.appendChild(content);
     wrapper.appendChild(collapsible);
-
-    // ✅ Aquí nos aseguramos de que se añade al contenedor correcto
     targetContainer.appendChild(wrapper);
 
     header.addEventListener("click", () => {
       content.classList.toggle("visible");
-      toggleIcon.textContent = content.classList.contains("visible") ? "▲" : "▼";
     });
   });
 }
+
 
 
 
@@ -1030,7 +1081,7 @@ function groupCSVOptions() {
 
   const toggleBtn = document.createElement("button");
   toggleBtn.className = "csv-dropdown-toggle";
-  toggleBtn.textContent = "CSV Options ▼";
+  toggleBtn.textContent = "CSV Options";
 
   const menu = document.createElement("div");
   menu.className = "csv-dropdown-menu";
@@ -1124,14 +1175,12 @@ document.addEventListener("DOMContentLoaded", () => {
       e.stopPropagation();
       const isOpen = dropdown.style.display === "block";
       dropdown.style.display = isOpen ? "none" : "block";
-      toggleLabel.textContent = isOpen ? "Filters ▼" : "Filters ▲";
     });
 
     document.addEventListener("click", (e) => {
       const summaryBox = document.getElementById("activeFiltersSummary");
       if (!summaryBox.contains(e.target)) {
         dropdown.style.display = "none";
-        toggleLabel.textContent = "Filters ▼";
       }
     });
   }

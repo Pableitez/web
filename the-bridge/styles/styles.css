@@ -128,14 +128,16 @@
   .main-content {
     height: calc(100vh - 96px);
     display: flex;
+    margin: 0;
     flex-direction: column;
     padding: 0 1rem 1rem 1rem; /* Sin padding arriba */
-    margin: 0 1rem; /* Eliminamos el margin-top */
     max-width: none;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
+    
   }
   
+
   
   /* ===== Buttons ===== */
   #toggleFiltersBtn,
@@ -169,17 +171,8 @@
     gap: 1rem;
   }
   
-  .filter-block {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1.2rem; /* o más si lo prefieres */
-  }
   
-  .filter-block input {
-    padding: 0.4rem;
-    border: 1px solid #999;
-    border-radius: 4px;
-  }
+
   
   #filtersContainer.hidden {
     display: none;
@@ -689,18 +682,10 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
   }
   
-  .filter-block.active {
-    background-color: #e8f1ff;
-    border: 1px solid #0a2337;
-    box-shadow: 0 0 5px rgba(10, 35, 55, 0.6);
-    border-radius: 6px;
-    padding: 0.5rem;
-  }
+ 
  /* Botones agrupadores más integrados */
 /* Unificar separación entre secciones */
-.filter-wrapper {
-  margin-bottom: 16px;
-}
+
 
 /* Asegura consistencia entre botones tipo sección */
 .filter-toggle {
@@ -725,11 +710,7 @@
   background-color: #0d3d5f;
 }
 
-/* Consistencia en el select debajo */
-#savedFiltersContainer select {
-  margin-top: 12px;
-  margin-bottom: 0;
-}
+
 
 
 /* Contenedor justo debajo del botón */
@@ -743,9 +724,7 @@
 }
 
 /* Compacta los bloques individuales */
-.filter-block {
-  margin-bottom: 0.7rem;
-}
+
 
 
 
@@ -758,28 +737,14 @@
     margin: 0;
   }
   
-  .filter-block > label {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    font-weight: 500;
-    font-size: 0.95rem;
-    margin-bottom: 0.2rem;
-    white-space: nowrap; /* Evita salto de línea del texto */
-  }
+  
   
   .filter-empty-checkbox {
     transform: scale(0.9);
     accent-color: #0a2337;
     margin-left: 0; /* Quita margen */
   }
-/* Solo aplica sombreado cuando el checkbox de empty está marcado */
-.filter-block:has(input.filter-empty-checkbox:checked) {
-  background-color: #eef4fb;
-  border: 1px solid #0a2337;
-  border-radius: 6px;
-  padding: 0.5rem;
-}
+
 
 .filter-toggle {
   position: sticky;
@@ -811,38 +776,14 @@
   color: #c00;
 }
 
-.filter-collapsible {
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-  background-color: #f6f9fc;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
 
-.filter-header {
-  padding: 0.45rem 0.6rem;
-  font-weight: 600;
-  background-color: #e1ecf4;
-  cursor: pointer;
-  font-size: 0.95rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
-.filter-header:hover {
-  background-color: #d0e6f3;
-}
 
-.toggle-icon {
-  font-size: 0.85rem;
-  margin-left: 6px;
-}
 
-.filter-content {
-  display: none;
-  padding: 0.5rem;
-}
+
+
+
+
 
 .filter-content.visible {
   display: block;
@@ -896,30 +837,6 @@
 
 .views-controls button {
   min-width: 120px;
-}
-
-#filterViewSelect {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: #f0f6ff;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  font-family: inherit;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-  min-height: 120px;
-  resize: vertical;
-  overflow-y: auto;
-}
-
-#filterViewSelect option {
-  padding: 6px 10px;
-  cursor: pointer;
-}
-
-#filterViewSelect option:checked {
-  background-color: #007acc;
-  color: white;
 }
 
 
@@ -989,42 +906,11 @@
 .modal-close-btn:hover {
   background-color: #14344d;
 }
-#savedFilterViewsList {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 1rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
 
-#savedFilterViewsList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0.75rem;
-  background: #f5f5f5;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-  color: #0a2337;
-  font-weight: 500;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
 
-#savedFilterViewsList li button {
-  background-color: #d9534f;
-  border: none;
-  padding: 0.25rem 0.5rem;
-  color: white;
-  font-size: 0.8rem;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 0.5rem;
-  transition: background-color 0.2s ease;
-}
 
-#savedFilterViewsList li button:hover {
-  background-color: #c9302c;
-}
+
+
 
 
 .column-toggle {
@@ -1106,9 +992,7 @@
   color: white;
 }
 
-#savedFiltersContainer {
-  margin-bottom: 1.5rem;
-}
+
 
 /* Estilo del menú desplegable */
 .dropdown {
@@ -1679,18 +1563,7 @@
 }
 
 /* Contenedor de multiselect estilizado */
-.filter-block select,
-.selectized {
-  font-size: 0.85rem;
-  padding: 6px 10px;
-  min-height: 36px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  background-color: #f3f6f9;
-  width: 100%;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-  line-height: 1.2;
-}
+
 
 /* Estilo para cada "pill" seleccionada si usas selectize.js, choices.js o similar */
 .selectized .item {
@@ -1715,27 +1588,11 @@
   cursor: pointer;
 }
 
-/* Reduce espacio entre elementos si está dentro de .filter-block */
-.filter-block {
-  margin-bottom: 0.6rem;
-}
+
 
 /* Etiquetas de los campos más pequeñas pero legibles */
-.filter-block label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
-  color: #0a2337;
-}
 
-.filter-collapsible.expanded {
-  background-color: #ffffff;
-  border: 2px solid #007acc;
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
+
 
 
 /* Overlay del modal */
@@ -1926,3 +1783,177 @@
 .filter-panel.active {
   display: block;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilo general del modal */
+.filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-modal-content {
+  background: white;
+  width: 85vw;
+  max-width: 1200px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+}
+
+.offcanvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+}
+
+.filter-modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.filter-tabs {
+  width: 200px;
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-tab {
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-weight: bold;
+  color: #333;
+  border-left: 4px solid transparent;
+}
+
+.filter-tab.active {
+  background-color: #e9f1ff;
+  border-left: 4px solid #007bff;
+}
+
+.filter-panels {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-panel {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.filter-panel.active {
+  display: grid;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.filter-date,
+.filter-multiselect,
+.reference-autocomplete {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.views-controls.footer-controls {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.autocomplete-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  position: absolute;
+  z-index: 9999;
+  width: 100%;
+}
+
+.autocomplete-item {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
