@@ -44,6 +44,11 @@
     </div>
   </div>
 
+
+
+
+
+
 <!-- Mod emergente centrado que reemplaza el leftFilterPanel -->
 <div id="filterModal" class="filter-modal-overlay hidden">
   <div class="filter-modal-content">
@@ -56,7 +61,7 @@
     <!-- Cuerpo dividido en dos columnas -->
     <div class="filter-modal-body">
       <!-- Pestañas de filtro -->
-      <aside class="filter-tabs"> <!-- Cambiado de <nav> a <aside> por accesibilidad -->
+      <aside class="filter-tabs">
         <button class="filter-tab active" data-target="generic">Generic Filters</button>
         <button class="filter-tab" data-target="reference">Filters by Reference</button>
         <button class="filter-tab" data-target="date">Filters by Date</button>
@@ -72,7 +77,22 @@
         <div id="referenceFilterPanel" class="filter-panel filter-modal-grid filter-inputs"></div>
 
         <!-- Panel de filtros por fecha -->
-        <div id="dateFilterPanel" class="filter-panel filter-modal-grid filter-inputs"></div>
+        <div id="dateFilterPanel" class="filter-panel filter-modal-grid filter-inputs">
+          <!-- Ejemplo con botones reset individuales -->
+          <div class="filter-block">
+            <label for="cargoDate">Cargo Ready Date (UTC)</label>
+
+            <div style="position: relative;">
+              <input type="date" id="cargoDate" class="filter-date">
+              <button type="button" class="filter-clear-btn" onclick="this.previousElementSibling.value=''">×</button>
+            </div>
+
+            <div style="position: relative; margin-top: 0.4rem;">
+              <input type="date" class="filter-date">
+              <button type="button" class="filter-clear-btn" onclick="this.previousElementSibling.value=''">×</button>
+            </div>
+          </div>
+        </div>
 
         <!-- Panel de filtros guardados -->
         <div id="savedFiltersPanel" class="filter-panel">
@@ -93,19 +113,28 @@
       </div> <!-- end filter-panels -->
     </div> <!-- end filter-modal-body -->
 
-<!-- Controles -->
-<div class="views-controls footer-controls">
-  <div class="left-controls">
-    <button id="resetFiltersBtn" class="panel-action-btn reset">Reset Filters</button>
-  </div>
-  <div class="right-controls">
-    <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
-    <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
-    <button id="applyFilterBtn" class="panel-action-btn primary">Apply</button>
-  </div>
-</div>
-</div> <!-- cierre de .filter-modal-content -->
+    <!-- Controles -->
+    <div class="views-controls footer-controls">
+      <div class="left-controls">
+        <button id="resetFiltersBtn" class="panel-action-btn reset">Reset Filters</button>
+      </div>
+      <div class="right-controls">
+        <button id="saveFilterViewBtn" class="panel-action-btn">Save Filter View</button>
+        <button id="manageFilterViewsBtn" class="panel-action-btn">Manage Filter Views</button>
+        <button id="applyFilterBtn" class="panel-action-btn primary">Apply</button>
+      </div>
+    </div>
+  </div> <!-- cierre de .filter-modal-content -->
 </div> <!-- cierre de #filterModal -->
+
+
+
+
+
+
+
+
+
 
 
   <!-- Contenido principal -->
@@ -178,7 +207,7 @@
 
   <div id="manageFilterViewsModal" class="modal hidden">
     <div class="modal-content">
-      <h2>Manage Filter Views</h2>
+      <h2>Manage Saved Filter</h2>
       <ul id="savedFilterViewsList" class="manage-views-list">
         <li class="view-item">
           FOS-NORAM

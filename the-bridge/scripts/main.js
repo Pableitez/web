@@ -211,31 +211,53 @@ function generateFilterSidebar(headers) {
       endInput.className = "filter-date";
       endInput.dataset.key = col + "_end";
 
-      const emptyInput = document.createElement("input");
-      emptyInput.type = "checkbox";
-      emptyInput.dataset.key = col + "_empty";
-      emptyInput.className = "filter-empty-checkbox";
+      const emptyBtn = document.createElement("button");
+      emptyBtn.type = "button";
+      emptyBtn.className = "filter-empty-toggle";
+      emptyBtn.textContent = "Empty";
+      emptyBtn.dataset.key = col + "_empty";
+
+      emptyBtn.addEventListener("click", () => {
+        emptyBtn.classList.toggle("active");
+        const isActive = emptyBtn.classList.contains("active");
+        filterValues[col + "_empty"] = isActive;
+        div.classList.add("active");
+        applyFilters();
+      });
 
       const label = document.createElement("label");
-
-      label.appendChild(emptyInput);
-
       div.appendChild(label);
       div.appendChild(startInput);
       div.appendChild(endInput);
+      div.appendChild(emptyBtn);
+
+      const resetBtn = document.createElement("button");
+      resetBtn.textContent = "✕";
+      resetBtn.className = "filter-reset-btn";
+      resetBtn.type = "button";
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        startInput.value = "";
+        endInput.value = "";
+        emptyBtn.classList.remove("active");
+        delete filterValues[col + "_start"];
+        delete filterValues[col + "_end"];
+        delete filterValues[col + "_empty"];
+        div.classList.remove("active");
+        applyFilters();
+      });
+      header.appendChild(resetBtn);
 
       startInput.addEventListener("input", () => {
         filterValues[col + "_start"] = startInput.value;
+        div.classList.add("active");
         applyFilters();
       });
 
       endInput.addEventListener("input", () => {
         filterValues[col + "_end"] = endInput.value;
-        applyFilters();
-      });
-
-      emptyInput.addEventListener("change", () => {
-        filterValues[col + "_empty"] = emptyInput.checked;
+        div.classList.add("active");
         applyFilters();
       });
 
@@ -851,26 +873,30 @@ document.getElementById("manageViewsBtn").addEventListener("click", () => {
   list.innerHTML = "";
   Object.entries(views).forEach(([name, config]) => {
     const li = document.createElement("li");
-    li.textContent = name;
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "x";
-    delBtn.classList.add("panel-action-btn--small");
-    delBtn.onclick = () => {
+    li.className = "view-item";
+    li.innerHTML = `
+      <div class="saved-view-card">${name}</div>
+      <button class="delete-btn" title="Remove view">✖</button>
+    `;
+
+    li.querySelector(".delete-btn").onclick = () => {
       delete views[name];
       localStorage.setItem("columnViews", JSON.stringify(views));
       populateSavedViews();
       li.remove();
     };
-    li.appendChild(delBtn);
+
     list.appendChild(li);
   });
 
   modal.classList.remove("hidden");
 });
 
+
 document.getElementById("closeManageViews").addEventListener("click", () => {
   document.getElementById("manageViewsModal").classList.add("hidden");
 });
+
 
 document.getElementById("manageFilterViewsBtn").addEventListener("click", () => {
   const modal = document.getElementById("manageFilterViewsModal");
@@ -878,24 +904,29 @@ document.getElementById("manageFilterViewsBtn").addEventListener("click", () => 
   const filters = JSON.parse(localStorage.getItem("savedFilters") || "{}");
 
   list.innerHTML = "";
+
   Object.entries(filters).forEach(([name]) => {
     const li = document.createElement("li");
-    li.textContent = name;
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "x";
-    delBtn.classList.add("panel-action-btn--small");
-    delBtn.onclick = () => {
+    li.className = "view-item";
+    li.innerHTML = `
+      <div class="saved-view-card">${name}</div>
+      <button class="delete-btn" title="Remove filter">✖</button>
+    `;
+    li.querySelector(".delete-btn").onclick = () => {
       delete filters[name];
       localStorage.setItem("savedFilters", JSON.stringify(filters));
       populateFilterViews();
       li.remove();
     };
-    li.appendChild(delBtn);
     list.appendChild(li);
   });
 
   modal.classList.remove("hidden");
 });
+
+
+
+
 
 document.getElementById("closeManageFilterViews").addEventListener("click", () => {
   document.getElementById("manageFilterViewsModal").classList.add("hidden");
@@ -974,6 +1005,8 @@ filterSelect.innerHTML = "";
     filterSelect.appendChild(option);
   });
 }
+
+
 
 // =================== POBLAR SELECT DE COLUMNAS ===================
 function populateSavedViews() {

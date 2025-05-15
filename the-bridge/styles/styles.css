@@ -29,7 +29,7 @@
     gap: 1rem;
     border-radius: 10px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-    margin: 0.5rem 1rem;
+    margin: 0.5rem 0.5rem;
     min-height: 56px;
   }
   
@@ -46,44 +46,64 @@
   }
   
   /* ===== Dropdown for Views ===== */
-  .view-dropdown {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .view-dropdown select,
-  .view-dropdown button {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    background-color: #0a2337;
-    color: white;
-    transition: background-color 0.3s ease;
-  }
-  
-  .view-dropdown button:hover {
-    background-color: #14344d;
-  }
-  
-  /* ===== View Actions Dropdown Buttons ===== */
-  .dropdown-menu button.action-button {
-    background-color: #14344d;
-    color: white;
-    border: none;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-  }
-  
-  .dropdown-menu button.action-button:hover {
-    background-color: #1c4a6b;
-  }
+
+
+/* === Vista desplegable: contenedor de acciones y select === */
+.view-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Estilo del select y botón de vistas */
+.view-dropdown select,
+.view-dropdown button {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #0a2337;
+  color: white;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.view-dropdown button:hover,
+.view-dropdown select:hover {
+  background-color: #14344d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.view-dropdown select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(49, 98, 148, 0.4);
+}
+
+/* === Acciones dentro del dropdown (botones de opciones) === */
+.dropdown-menu button.action-button {
+  background-color: #ffffff;
+  color: #0a2337;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-menu button.action-button:hover {
+  background-color: #e6f0fb;
+  color: #003a63;
+}
+
+
+
   
   /* ===== CSV Button ===== */
   .custom-file-upload {
@@ -125,18 +145,19 @@
   }
   
   /* ===== Main Layout ===== */
-  .main-content {
-    height: calc(100vh - 96px);
-    display: flex;
-    margin: 0;
-    flex-direction: column;
-    padding: 0 1rem 1rem 1rem; /* Sin padding arriba */
-    max-width: none;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    
-  }
-  
+.main-content {
+  height: calc(100vh - 96px);
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* ✅ importante para ver el contenido y los botones */
+  padding: 0;      /* o puedes dejar un poco si lo necesitas */
+  margin: 0 auto;  
+  margin: 0.5rem 0.5rem;
+  max-width: 100%;
+  box-shadow: none;
+  border-radius: 0;
+  background: none;
+}
 
   
   /* ===== Buttons ===== */
@@ -288,38 +309,104 @@
     box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.25);
   }
   
-  /* ===== Offcanvas Panel ===== */
-  .offcanvas-panel {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 400px; /* igual que el left-panel */
-    height: 100vh;
-    background: #fff;
-    border-left: 1px solid #ccc;
-    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    z-index: 999;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-  }
-  
-  .offcanvas-panel.hidden {
-    transform: translateX(100%);
-  }
-  
-  .offcanvas-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .offcanvas-body label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-  }
+
+
+
+
+.offcanvas-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 400px;
+  height: 100vh;
+  background: #fff;
+  border-left: 2px solid #0a2337; /* igual que filters */
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px 0 0 8px;
+  z-index: 999;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+
+.offcanvas-header {
+  background-color: #0a2337;
+  color: white;
+  padding: 1rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+}
+
+
+.offcanvas-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  background-color: white;
+}
+
+#columnVisibility label {
+  background-color: #f2f5f8;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #0a2337;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+#columnVisibility label:hover {
+  background-color: #e6f0fb;
+}
+
+#columnVisibility input[type="checkbox"] {
+  transform: scale(1.1);
+  accent-color: #316294;
+}
+
+
+
+.offcanvas-panel .footer-controls {
+  padding: 1rem;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e1e1e1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.offcanvas-panel .footer-controls button {
+  background-color: #316294;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.offcanvas-panel .footer-controls button:hover {
+  background-color: #14344d;
+}
+
+
+
+
+
+
+
   
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
@@ -360,56 +447,91 @@
 
   
   /* ===== Dropdown General ===== */
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .dropdown-toggle {
-    background-color: #0a2337;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .dropdown-toggle:hover {
-    background-color: #14344d;
-  }
-  
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: #0a2337;
-    border-radius: 6px;
-    padding: 0.5rem;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    z-index: 10;
-    min-width: 150px;
-  }
-  
-  .dropdown-menu button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    padding: 0.4rem;
-    color: white;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  .dropdown-menu button:hover {
-    background-color: #14344d;
-  }
-  
-  .dropdown:hover .dropdown-menu {
-    display: block;
-  }
+
+
+
+
+/* === Dropdown general refinado === */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Botón activador */
+.dropdown-toggle {
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dropdown-toggle:hover {
+  background-color: #14344d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Menú desplegable */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  min-width: 180px;
+  border: 1px solid #ddd;
+}
+
+/* Ítems del menú */
+.dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0a2337;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-menu button:hover {
+  background-color: #e6f0fb;
+  color: #003a63;
+}
+
+/* Mostrar el menú al pasar el ratón */
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   .modal {
     position: fixed;
     top: 0;
@@ -436,17 +558,65 @@
     display: none;
   }
   
-  #savedViewsList li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  
-  #savedViewsList button {
-    margin-left: 0.5rem;
-  }
-  
+#savedViewsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #0a2337;
+  margin-bottom: 0.5rem;
+}
+
+#savedViewsList button {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  border: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+#savedViewsList button:hover {
+  background-color: #ffc2c2;
+}
+#savedViewsList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #0a2337;
+  margin-bottom: 0.5rem;
+}
+
+#savedViewsList button {
+  background-color: #ffe0e0;
+  color: #8b0000;
+  border: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+#savedViewsList button:hover {
+  background-color: #ffc2c2;
+}
+
   /* === Toolbar select styled as button === */
   .toolbar select.toolbar-button {
     background-color: #0a2337;
@@ -466,118 +636,156 @@
   }
   
   
-  
-  /* === Modal styling === */
-  .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(10, 35, 55, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-  }
-  
-  .modal.hidden {
-    display: none;
-  }
-  
-  .modal-content {
-    background-color: #ffffff;
-    color: #0a2337;
-    padding: 2rem;
-    border-radius: 12px;
-    width: 400px;
-    max-width: 90%;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    text-align: left;
-  }
-  
-  .modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    font-size: 1.25rem;
-    color: #0a2337;
-  }
-  
-  #savedViewsList {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  #savedViewsList li {
-    padding: 0.5rem 0.75rem;
-    background: #f5f5f5;
-    border-radius: 4px;
-    margin-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  #savedViewsList button {
-    background-color: #d9534f;
-    border: none;
-    padding: 0.25rem 0.5rem;
-    color: white;
-    font-size: 0.8rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  #savedViewsList button:hover {
-    background-color: #c9302c;
-  }
-  
-  #closeManageViews {
-    background-color: #0a2337;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
-    float: right;
-  }
-  
-  #closeManageViews:hover {
-    background-color: #14344d;
-  }
 
-  .offcanvas-body {
-    max-height: calc(100vh - 150px);
-    overflow-y: auto;
-    padding-right: 0.75rem;
-    scrollbar-width: thin;
-  }
+
+
+
+
+
+
+/* === Modal Overlay === */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(10, 35, 55, 0.8); /* oscuro semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+/* === Modal Content Box === */
+.modal-content {
+  background-color: #ffffff;
+  color: #0a2337;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* === Modal Title === */
+.modal-content h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  color: #0a2337;
+  font-weight: bold;
+}
+
+/* === Saved Views List === */
+#savedViewsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+#savedViewsList li {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #0a2337;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* === Botones dentro de cada ítem === */
+#savedViewsList button {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+#savedViewsList button:hover {
+  background-color: #c9302c;
+}
+
+/* === Botón de cerrar modal === */
+#closeManageViews {
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  align-self: flex-end;
+  transition: background-color 0.3s ease;
+}
+
+#closeManageViews:hover {
+  background-color: #14344d;
+}
+
+/* === Cuerpo scrollable del panel lateral (reutilizable) === */
+.offcanvas-body {
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  padding-right: 0.75rem;
+  scrollbar-width: thin;
+}
+
+/* === Lista de columnas (tipo checkbox) === */
+#columnVisibility {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+}
+
+#columnVisibility label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  background-color: #f8f8f8;
+  border-radius: 6px;
+  color: #0a2337;
+  transition: background-color 0.2s ease;
+}
+
+#columnVisibility label:hover {
+  background-color: #e6f0fb;
+}
+
+#columnVisibility input[type="checkbox"] {
+  transform: scale(1.1);
+  accent-color: #316294;
+}
+
+
+
+
+
+
+
+
+
   
-  #columnVisibility {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-  }
-  
-  #columnVisibility label {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.3rem 0.2rem;
-    font-size: 0.9rem;
-    background-color: #f8f8f8;
-    border-radius: 4px;
-    padding-left: 0.4rem;
-  }
-  
-  #columnVisibility input[type="checkbox"] {
-    transform: scale(1.1);
-  }
-  
+
   /* === Overlay background === */
 .overlay {
     position: fixed;
@@ -738,13 +946,42 @@
   }
   
   
-  
-  .filter-empty-checkbox {
-    transform: scale(0.9);
-    accent-color: #0a2337;
-    margin-left: 0; /* Quita margen */
-  }
+/* Checkbox estilizado */
+.filter-empty-checkbox {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #316294;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
 
+
+.filter-empty-checkbox:checked {
+  background-color: #316294;
+  border-color: #316294;
+}
+
+.filter-empty-checkbox:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+  left: 3px;
+}
+
+
+/* Texto “Empty” con estilo suave */
+.filter-block label::after {
+  margin-left: 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #666;
+}
 
 .filter-toggle {
   position: sticky;
@@ -906,6 +1143,40 @@
 .modal-close-btn:hover {
   background-color: #14344d;
 }
+
+
+
+.view-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+
+
+
 
 
 
@@ -1590,215 +1861,11 @@
 
 
 
-/* Etiquetas de los campos más pequeñas pero legibles */
 
 
 
 
-/* Overlay del modal */
-.filter-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-/* Contenedor principal del modal */
-.filter-modal-content {
-  background: #fff;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-/* Cabecera con título y botón de cierre */
-.offcanvas-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* Título */
-.filter-modal-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #1b2c3b;
-  margin: 0;
-}
-
-/* Cuerpo dividido en pestañas + contenido */
-.filter-modal-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* Pestañas a la izquierda */
-.filter-tabs {
-  flex: 0 0 200px;
-  background-color: #f9f9f9;
-  border-right: 1px solid #eee;
-  display: flex;
-  flex-direction: column;
-  padding: 0.5rem 0;
-}
-
-.filter-tab {
-  background: none;
-  border: none;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  cursor: pointer;
-  font-weight: 500;
-  color: #222;
-}
-
-.filter-tab.active {
-  background-color: #e7f0fe;
-  color: #0056d2;
-  border-left: 4px solid #2975ea;
-}
-
-/* Paneles de contenido */
-.filter-panels {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-}
-
-.filter-panel {
-  display: none;
-}
-
-.filter-panel.active {
-  display: block;
-}
-
-/* Panel dinámico de filtros (grid) */
-.filter-modal-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 1rem;
-}
-
-/* Pie del modal */
-.footer-controls {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 0.75rem 1rem;
-  border-top: 1px solid #eaeaea;
-  gap: 0.5rem;
-  background-color: #fafafa;
-}
-
-/* Botones */
-.panel-action-btn {
-  background-color: #0d1f2d;
-  color: white;
-  border: none;
-  padding: 0.45rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-
-.panel-action-btn:hover {
-  background-color: #152e40;
-}
-
-.panel-action-btn.reset {
-  background-color: #fddede;
-  color: #a70000;
-  font-weight: bold;
-}
-
-.panel-action-btn.reset:hover {
-  background-color: #fbc8c8;
-}
-
-.panel-action-btn.primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.panel-action-btn.primary:hover {
-  background-color: #0056d2;
-}
-
-/* Botón cerrar */
-.panel-action-btn--small {
-  padding: 0.3rem 0.6rem;
-  font-size: 0.9rem;
-  background-color: #0d1f2d;
-  color: white;
-  border-radius: 4px;
-}
-
-/* Opcional: scrollbar estilizado */
-.filter-panels::-webkit-scrollbar {
-  width: 8px;
-}
-
-.filter-panels::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 4px;
-}
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 999;
-}
-
-.overlay.hidden {
-  display: none;
-}
-.hidden {
-  display: none !important;
-}
-
-.filter-panel {
-  display: none;
-}
-
-.filter-panel.active {
-  display: block;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Estilo general del modal */
+/* === Overlay del modal === */
 .filter-modal-overlay {
   position: fixed;
   top: 0;
@@ -1812,37 +1879,43 @@
   justify-content: center;
 }
 
+/* === Contenedor del modal === */
 .filter-modal-content {
   background: white;
   width: 85vw;
   max-width: 1200px;
+  height: 85vh;
   max-height: 85vh;
-  display: flex;
-  flex-direction: column;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #0a2337;
 }
 
+/* === Cabecera del modal === */
 .offcanvas-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #ddd;
+  background-color: #0a2337;
+  color: white;
+  border-bottom: 1px solid #ccc;
 }
 
-.filter-modal-body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  min-height: 300px;
+.filter-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: white;
 }
 
+/* === Tabs laterales === */
 .filter-tabs {
   width: 200px;
-  background-color: #f7f7f7;
+  background-color: #f2f5f8;
   border-right: 1px solid #ddd;
   padding: 1rem 0;
   display: flex;
@@ -1856,14 +1929,22 @@
   border: none;
   text-align: left;
   cursor: pointer;
-  font-weight: bold;
-  color: #333;
+  font-weight: 600;
+  color: #0a2337;
   border-left: 4px solid transparent;
 }
 
 .filter-tab.active {
-  background-color: #e9f1ff;
-  border-left: 4px solid #007bff;
+  background-color: #e4eefc;
+  border-left: 4px solid #316294;
+  color: #003a63;
+}
+
+/* === Cuerpo del modal === */
+.filter-modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .filter-panels {
@@ -1872,21 +1953,209 @@
   padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
+  background-color: #ffffff;
 }
 
 .filter-panel {
   display: none;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .filter-panel.active {
   display: grid;
 }
 
+/* === Footer === */
+.footer-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e1e1e1;
+  gap: 0.5rem;
+}
 
+/* === Botones === */
+.panel-action-btn {
+  background-color: #0a2337;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
 
+.panel-action-btn:hover {
+  background-color: #14344d;
+}
+
+.panel-action-btn.reset {
+  background-color: #ffe0e0;
+  color: #8b0000;
+}
+
+.panel-action-btn.reset:hover {
+  background-color: #ffc2c2;
+}
+
+.panel-action-btn.primary {
+  background-color: #316294;
+  color: white;
+}
+
+.panel-action-btn.primary:hover {
+  background-color: #316294;
+}
+
+/* === Inputs === */
+.filter-date,
+.filter-multiselect,
+.reference-autocomplete {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #f9f9f9;
+  color: #0a2337;
+  box-sizing: border-box;
+}
+
+/* === Título de filtro === */
+.filter-block label {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: #0a2337;
+  margin-bottom: 0.6rem;
+  gap: 0.25rem;
+}
+
+/* === Botón de reset (X) junto al título === */
+.filter-block .filter-reset-btn {
+  margin-left: auto;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #999;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  align-self: center;
+}
+
+.filter-block .filter-reset-btn:hover {
+  color: #c00;
+}
+
+/* === Botón "Empty" debajo de los inputs de fecha === */
+.filter-empty-checkbox {
+  appearance: none;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #0a2337;
+  background-color: #e8e8e8;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  display: inline-block;
+  width: 100%;
+}
+
+.filter-empty-checkbox::after {
+  content: "Empty";
+}
+
+.filter-empty-checkbox:checked {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #0056d2;
+}
+
+.filter-empty-checkbox:checked::after {
+  content: "Empty";
+  color: #fff;
+}
+
+/* === Filtro activo destacado === */
+.filter-block.active {
+  border: 1px solid #007bff;
+  border-radius: 6px;
+  padding: 0.5rem;
+  background-color: #eef5ff;
+}
+
+/* === Scrollbars === */
+.filter-panels::-webkit-scrollbar {
+  width: 8px;
+}
+
+.filter-panels::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
+}
+
+/* === Utilidades === */
+.hidden {
+  display: none !important;
+}
+
+.autocomplete-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 150px;
+  overflow-y: auto;
+  background: white;
+  position: absolute;
+  z-index: 9999;
+  width: max-content;
+  min-width: 100%;
+  white-space: nowrap;
+}
+
+.autocomplete-item {
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.autocomplete-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* === Selector clear (X) reubicado === */
+.filter-wrapper .filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-wrapper .filter-reset-btn,
+.filter-block .filter-reset-btn {
+  margin-left: auto;
+  font-size: 0.9rem;
+  background: transparent;
+  color: #999;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.filter-wrapper .filter-reset-btn:hover,
+.filter-block .filter-reset-btn:hover {
+  color: #c00;
+}
 
 
 
