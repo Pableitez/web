@@ -10,6 +10,9 @@ let currentPage = 1;
 let initialCSVData = null;
 const filterValues = {};
 let loadedCSVs = [];
+let visibleColumns = [];
+let sortOrder = 1;
+let sortedColumn = null;
 
       const DB_NAME = 'embarquesDB';
       const STORE_NAME = 'csvVersions';
@@ -51,11 +54,22 @@ let loadedCSVs = [];
               initialCSVData = [...results.data];
               filteredData = [...originalData];
               currentHeaders = Object.keys(originalData[0]);
+              visibleColumns = [...currentHeaders]; // reinicia columnas visibles
               generateFilterSidebar(currentHeaders, "filterInputsContainer");
-              generateColumnVisibilityControls(currentHeaders);
+              generateColumnVisibilityControls(visibleColumns);
               applyFilters();
               populateSavedViews();
               populateFilterViews();
+
+    const viewSelect = document.getElementById("viewSelect");
+    if (viewSelect) {
+      const allOption = viewSelect.querySelector("option[value='All']");
+      if (allOption) {
+        allOption.textContent = "All";
+        allOption.selected = true;
+      }
+    }
+
 
 
               // Botón Export to Excel
@@ -201,35 +215,50 @@ function generateFilterSidebar(headers) {
     div.className = "filter-block";
 
     if (isDate) {
-      const startInput = document.createElement("input");
-      startInput.type = "date";
-      startInput.className = "filter-date";
-      startInput.dataset.key = col + "_start";
+const startInput = document.createElement("input");
+startInput.type = "date";
+startInput.className = "filter-date";
+startInput.dataset.key = col + "_start";
 
-      const endInput = document.createElement("input");
-      endInput.type = "date";
-      endInput.className = "filter-date";
-      endInput.dataset.key = col + "_end";
+const endInput = document.createElement("input");
+endInput.type = "date";
+endInput.className = "filter-date";
+endInput.dataset.key = col + "_end";
 
-      const emptyBtn = document.createElement("button");
-      emptyBtn.type = "button";
-      emptyBtn.className = "filter-empty-toggle";
-      emptyBtn.textContent = "Empty";
-      emptyBtn.dataset.key = col + "_empty";
+// Botón EMPTY
+const emptyBtn = document.createElement("button");
+emptyBtn.type = "button";
+emptyBtn.className = "filter-empty-toggle";
+emptyBtn.textContent = "Empty";
+emptyBtn.dataset.key = col + "_empty";
+emptyBtn.addEventListener("click", () => {
+  emptyBtn.classList.toggle("active");
+  const isActive = emptyBtn.classList.contains("active");
+  filterValues[col + "_empty"] = isActive;
+  div.classList.add("active");
+  applyFilters();
+});
 
-      emptyBtn.addEventListener("click", () => {
-        emptyBtn.classList.toggle("active");
-        const isActive = emptyBtn.classList.contains("active");
-        filterValues[col + "_empty"] = isActive;
-        div.classList.add("active");
-        applyFilters();
-      });
+// Botón HOY
+const todayBtn = document.createElement("button");
+todayBtn.type = "button";
+todayBtn.style.marginLeft = "0.5rem";
+todayBtn.className = "filter-empty-toggle";
+todayBtn.textContent = "From Today";
+todayBtn.title = "Usar fecha dinámica (__TODAY__)";
+todayBtn.addEventListener("click", () => {
+  startInput.value = "__TODAY__";
+  filterValues[col + "_start"] = "__TODAY__";
+  div.classList.add("active");
+  applyFilters();
+});
 
-      const label = document.createElement("label");
-      div.appendChild(label);
-      div.appendChild(startInput);
-      div.appendChild(endInput);
-      div.appendChild(emptyBtn);
+// Añadir todos los elementos al bloque
+div.appendChild(startInput);
+div.appendChild(endInput);
+div.appendChild(emptyBtn);
+div.appendChild(todayBtn);
+
 
       const resetBtn = document.createElement("button");
       resetBtn.textContent = "✕";
@@ -468,8 +497,9 @@ function applyFilters() {
         const rawValue = row[baseKey];
         const value = rawValue ? rawValue.trim() : "";
 
-        const start = filterValues[baseKey + "_start"];
-        const end = filterValues[baseKey + "_end"];
+const start = resolveDynamicValue(filterValues[baseKey + "_start"]);
+const end = resolveDynamicValue(filterValues[baseKey + "_end"]);
+
         const empty = filterValues[baseKey + "_empty"];
 
         if (empty) return value === "";
@@ -610,63 +640,105 @@ function parseFlexibleDate(value) {
     return isNaN(val) ? 50 : val;
   }
 
-  function displayTable(data, page, pageSize) {
-    currentPage = page;
-    const container = document.getElementById("tableContainer");
-    container.innerHTML = "";
+function displayTable(data, page, pageSize) {
+  currentPage = page;
+  const container = document.getElementById("tableContainer");
+  container.innerHTML = "";
 
-    if (!data.length) {
-      container.innerHTML = "<p>No data found.</p>";
-      return;
-    }
-
-    const table = document.createElement("table");
-    table.className = "data-table";
-
-    const thead = document.createElement("thead");
-    const headRow = document.createElement("tr");
-    const keys = Object.keys(data[0]);
-
-    keys.forEach((key, index) => {
-      const th = document.createElement("th");
-      th.textContent = key;
-      th.classList.add(`col-${index}`);
-      headRow.appendChild(th);
-    });
-
-    thead.appendChild(headRow);
-    table.appendChild(thead);
-
-    const tbody = document.createElement("tbody");
-    const start = (page - 1) * pageSize;
-    const end = pageSize === -1 ? data.length : start + pageSize;
-
-    data.slice(start, end).forEach((row) => {
-      const tr = document.createElement("tr");
-      keys.forEach((key, index) => {
-        const td = document.createElement("td");
-        td.textContent = row[key] ?? "";
-        td.classList.add(`col-${index}`);
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-
-    table.appendChild(tbody);
-    container.appendChild(table);
-    createPaginationControls(data.length, pageSize);
-    // 🧮 Añadir contador de registros
-const recordCountEl = document.getElementById("recordCount");
-if (recordCountEl) {
-  recordCountEl.textContent = `Total: ${data.length} records`;
-}
-const filterNameEl = document.getElementById("activeFilterName");
-if (filterNameEl) {
-  const select = document.getElementById("filterViewSelect");
-  const selectedNames = Array.from(select.selectedOptions).map(opt => opt.value);
-  filterNameEl.textContent = selectedNames.length ? `Filters: ${selectedNames.join(", ")}` : "";
-}
+  if (!data.length) {
+    container.innerHTML = "<p>No data found.</p>";
+    return;
   }
+
+  const table = document.createElement("table");
+  table.className = "data-table";
+
+  const thead = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  let sortOrder = 1;
+  let sortedColumn = null;
+
+  const keys = visibleColumns.length > 0 ? visibleColumns : Object.keys(data[0]);
+  keys.forEach((key, index) => {
+    const th = document.createElement("th");
+    th.textContent = key;
+    th.classList.add(`col-${index}`);
+    th.setAttribute("draggable", true);
+    th.dataset.index = index;
+
+    // 🧲 Click para ordenar
+    th.addEventListener("click", () => {
+      const sortKey = key;
+      sortOrder = (sortedColumn === sortKey) ? -sortOrder : 1;
+      sortedColumn = sortKey;
+
+      filteredData.sort((a, b) => {
+        const valA = a[sortKey] ?? "";
+        const valB = b[sortKey] ?? "";
+
+        return valA.toString().localeCompare(valB.toString(), undefined, { numeric: true }) * sortOrder;
+      });
+
+      displayTable(filteredData, 1, pageSize);
+    });
+
+    // 🧩 Drag & Drop columnas
+    th.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("colIndex", index);
+    });
+
+    th.addEventListener("dragover", (e) => e.preventDefault());
+
+    th.addEventListener("drop", (e) => {
+      e.preventDefault();
+      const fromIndex = parseInt(e.dataTransfer.getData("colIndex"));
+      const toIndex = index;
+      if (fromIndex !== toIndex) {
+const moved = visibleColumns.splice(fromIndex, 1)[0];
+visibleColumns.splice(toIndex, 0, moved);
+        displayTable(data, page, pageSize);
+      }
+    });
+
+    headRow.appendChild(th);
+  });
+
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement("tbody");
+  const start = (page - 1) * pageSize;
+  const end = pageSize === -1 ? data.length : start + pageSize;
+
+  data.slice(start, end).forEach((row) => {
+    const tr = document.createElement("tr");
+    keys.forEach((key, index) => {
+      const td = document.createElement("td");
+      td.textContent = row[key] ?? "";
+      td.classList.add(`col-${index}`);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  container.appendChild(table);
+  createPaginationControls(data.length, pageSize);
+
+  // 🧮 Contador de registros
+  const recordCountEl = document.getElementById("recordCount");
+  if (recordCountEl) {
+    recordCountEl.textContent = `Total: ${data.length} records`;
+  }
+
+  const filterNameEl = document.getElementById("activeFilterName");
+  if (filterNameEl) {
+    const select = document.getElementById("filterViewSelect");
+    const selectedNames = Array.from(select.selectedOptions).map(opt => opt.value);
+    filterNameEl.textContent = selectedNames.length ? `Filters: ${selectedNames.join(", ")}` : "";
+  }
+}
+
 
   function createPaginationControls(totalRows, pageSize) {
     const pagination = document.getElementById("pagination");
@@ -810,12 +882,14 @@ document.getElementById("saveViewBtn").addEventListener("click", () => {
 
   const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
   const selectedColumns = Array.from(checkboxes).map(cb => cb.checked);
+  const columnOrder = [...visibleColumns]; // ✅ uso correcto del orden actual
 
-  const signature = currentHeaders.slice().sort().join("|"); // "firma" del CSV actual
+  const signature = currentHeaders.slice().sort().join("|"); // firma del CSV actual
 
   const savedViews = JSON.parse(localStorage.getItem("columnViews") || "{}");
   savedViews[name] = {
     columns: selectedColumns,
+    order: columnOrder,
     signature
   };
   localStorage.setItem("columnViews", JSON.stringify(savedViews));
@@ -826,22 +900,44 @@ document.getElementById("saveViewBtn").addEventListener("click", () => {
 document.getElementById("viewSelect").addEventListener("change", () => {
   const select = document.getElementById("viewSelect");
   const name = select.value;
+
+  // Fuerza ejecución incluso si se vuelve a seleccionar la misma opción
+  if (!name && select.dataset.lastSelected === "All") {
+    name = "All";
+  }
+  select.dataset.lastSelected = "";
+
+
   const saved = JSON.parse(localStorage.getItem("columnViews") || "{}");
   const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
 
-  if (!name) return; // Si no se seleccionó nada, salimos
+  if (!name) return;
 
-  if (name === "All") {
-    checkboxes.forEach((cb, index) => {
+  // ✅ Caso especial: "All" restaura el orden original del CSV
+if (name === "All") {
+  // 🧼 Restaurar el orden original del CSV
+  currentHeaders = Object.keys(originalData[0]);
+  visibleColumns = [...currentHeaders]; // orden original real
+  generateColumnVisibilityControls(visibleColumns);
+
+  setTimeout(() => {
+    const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
+    checkboxes.forEach((cb, i) => {
       cb.checked = true;
-      toggleColumnVisibility(index, true);
+      toggleColumnVisibility(i, true);
     });
-    document.getElementById("activeViewDisplay").textContent = "View: All";
-  } else {
-    const view = saved[name];
-    if (!view) return;
+  }, 0);
 
-    const currentSignature = currentHeaders.slice().sort().join("|");
+  applyFilters();
+  document.getElementById("activeViewDisplay").textContent = "View: All";
+  return;
+}
+
+
+  // 🧠 Cargar vista guardada personalizada
+  const view = saved[name];
+  if (view && Array.isArray(view.order)) {
+    const currentSignature = Object.keys(originalData[0]).slice().sort().join("|");
 
     if (view.signature && view.signature !== currentSignature) {
       alert("This view does not match the current CSV structure.");
@@ -849,16 +945,44 @@ document.getElementById("viewSelect").addEventListener("change", () => {
       return;
     }
 
-    view.columns.forEach((val, index) => {
-      checkboxes[index].checked = val;
-      toggleColumnVisibility(index, val);
-    });
+    currentHeaders = view.order.slice();
+    visibleColumns = view.order.slice();
+    generateColumnVisibilityControls(visibleColumns);
 
-    document.getElementById("activeViewDisplay").textContent = `View: ${name}`;
+    const checkboxesData = view.columns || view.order.map(() => true);
+
+    setTimeout(() => {
+      const checkboxes = document.querySelectorAll('#columnVisibility input[type="checkbox"]');
+      checkboxes.forEach((cb, i) => {
+        cb.checked = checkboxesData[i];
+        toggleColumnVisibility(i, cb.checked);
+      });
+    }, 0);
+
+
+applyFilters();
+populateSavedViews();
+
+const viewSelect = document.getElementById("viewSelect");
+if (viewSelect) {
+  // Restaurar texto original a todas las opciones
+  Array.from(viewSelect.options).forEach(opt => {
+    opt.textContent = opt.value;
+  });
+
+  // Modificar solo la opción seleccionada
+  const selectedOption = viewSelect.querySelector(`option[value="${name}"]`);
+  if (selectedOption) {
+    selectedOption.textContent = `View: ${name}`;
+viewSelect.value = name;
+  }
+}
+return;
+
   }
 
-  // ❌ Esta línea provocaba el bug visual
-  // select.value = ""; 
+  // Fallback por si no se encontró la vista
+  alert("This view could not be loaded.");
 });
 
 
@@ -1040,7 +1164,7 @@ function populateSavedViews() {
     select.appendChild(option);
   });
 
-  select.value = "All";
+select.value = ""; 
 }
 
 
@@ -1309,7 +1433,7 @@ document.getElementById("comparisonOverlay").addEventListener("click", () => {
     currentHeaders = Object.keys(originalData[0]);
 
     generateFilterSidebar(currentHeaders);
-    generateColumnVisibilityControls(currentHeaders);
+    generateColumnVisibilityControls(visibleColumns);
     applyFilters();
     populateSavedViews();
     populateFilterViews();
@@ -1321,3 +1445,22 @@ document.getElementById("comparisonOverlay").addEventListener("click", () => {
   }
 });
 
+function resolveDynamicValue(val) {
+  if (!val || typeof val !== "string") return val;
+
+  const today = new Date();
+
+  if (val === "__TODAY__") {
+    return today.toISOString().split("T")[0];
+  }
+
+  const match = val.match(/^__TODAY([+-]\d+)?__$/);
+  if (match) {
+    const offset = parseInt(match[1] || "0", 10);
+    const adjusted = new Date(today);
+    adjusted.setDate(today.getDate() + offset);
+    return adjusted.toISOString().split("T")[0];
+  }
+
+  return val;
+}

@@ -1265,6 +1265,7 @@
 
 
 
+
 /* Estilo del menú desplegable */
 .dropdown {
   position: relative;
@@ -2208,6 +2209,37 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.data-table th {
+  cursor: move;
+  background-color: #f0f0f0;
+  user-select: none;
+}
+
+.data-table th:hover {
+  background-color: #ddd;
+}
+
+.data-table th.sorted {
+  background-color: #d0e6ff;
+}
 
 
 

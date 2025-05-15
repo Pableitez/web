@@ -11,41 +11,41 @@
   <body>
 
   <!-- Toolbar superior -->
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <div class="view-select-wrapper">
-        <select id="viewSelect" class="view-selector">
-          <option value="" disabled selected>Views</option>
-        </select>
-      </div>
+<!-- Toolbar superior -->
+<div class="toolbar">
+  <div class="toolbar-left">
+    <div class="view-select-wrapper">
+      <select id="viewSelect" class="view-selector">
+        <option value="" disabled selected>Views</option>
+      </select>
     </div>
-
-    <div class="toolbar-title">
-      <h1>The Bridge</h1>
-    </div>
-
-    <div class="toolbar-right">
-      <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
-      <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
-
-      <!-- archivo único -->
-      <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
-      <input type="file" id="csvFileInput" accept=".csv" hidden />
-
-      <!-- archivo múltiple -->
-      <label for="csvMultiInput" class="custom-file-upload">Compare CSV Files</label>
-      <input type="file" id="csvMultiInput" multiple accept=".csv" hidden />
-
-      <!-- Lista de archivos seleccionados -->
-      <div id="csvFileList" class="csv-file-list"></div>
-
-      <!-- Botón para configurar comparación -->
-      <button id="setupComparisonBtn" class="panel-action-btn">Setup Comparison</button>
-    </div>
+    <!-- 🔴 Este div ya no es necesario -->
+    <!-- <div id="activeViewDisplay" ...></div> -->
   </div>
 
+  <div class="toolbar-title">
+    <h1>The Bridge</h1>
+  </div>
 
+  <div class="toolbar-right">
+    <button id="toggleFiltersBtn" class="toolbar-button">Filters</button>
+    <button id="toggleColumnsBtn" class="toolbar-button">Columns</button>
 
+    <!-- archivo único -->
+    <label for="csvFileInput" class="custom-file-upload">Select CSV File</label>
+    <input type="file" id="csvFileInput" accept=".csv" hidden />
+
+    <!-- archivo múltiple -->
+    <label for="csvMultiInput" class="custom-file-upload">Compare CSV Files</label>
+    <input type="file" id="csvMultiInput" multiple accept=".csv" hidden />
+
+    <!-- Lista de archivos seleccionados -->
+    <div id="csvFileList" class="csv-file-list"></div>
+
+    <!-- Botón para configurar comparación -->
+    <button id="setupComparisonBtn" class="panel-action-btn">Setup Comparison</button>
+  </div>
+</div>
 
 
 
